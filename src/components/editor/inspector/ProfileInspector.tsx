@@ -1,10 +1,11 @@
 import React, { useRef } from 'react';
-import { Upload, Sparkles, User, Check, AlignCenter, AlignLeft, Layers, Plus, Trash2, Award, Image } from 'lucide-react';
-import { ProfileBlockData } from '../../../types';
+import { Upload, Sparkles, User, Check, AlignCenter, AlignLeft, Layers, Plus, Trash2, Award, Image, Palette, RotateCcw } from 'lucide-react';
+import { ProfileBlockData, PageTheme } from '../../../types';
 
 interface ProfileInspectorProps {
   data: ProfileBlockData;
   onChange: (updated: ProfileBlockData) => void;
+  theme?: PageTheme;
 }
 
 const PRESET_AVATARS = [
@@ -23,7 +24,7 @@ const PRESET_COVERS = [
   'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=800&auto=format&fit=crop&q=80',
 ];
 
-export const ProfileInspector: React.FC<ProfileInspectorProps> = ({ data, onChange }) => {
+export const ProfileInspector: React.FC<ProfileInspectorProps> = ({ data, onChange, theme }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const currentLayout = data.layout || 'center';
@@ -359,6 +360,122 @@ export const ProfileInspector: React.FC<ProfileInspectorProps> = ({ data, onChan
           placeholder="Conte um pouco sobre você ou seu trabalho..."
           className="w-full px-3 py-2 text-sm rounded-lg bg-studio-input border border-studio-border text-white focus:outline-none focus:border-brand-500 resize-none leading-relaxed"
         />
+      </div>
+
+      {/* Text Colors: Title and Subtitle */}
+      <div className="pt-2 border-t border-studio-border space-y-3.5">
+        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+          <Palette className="w-3.5 h-3.5 text-brand-400" />
+          <span>Cores do Texto (Título & Subtítulo)</span>
+        </label>
+
+        {/* 1. Cor do Título */}
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-300">Cor do Título (Nome):</span>
+            {data.nameColor && (
+              <button
+                type="button"
+                onClick={() => {
+                  const updated = { ...data };
+                  delete updated.nameColor;
+                  onChange(updated);
+                }}
+                className="text-[11px] text-slate-400 hover:text-brand-300 flex items-center gap-1 transition-colors"
+                title="Restaurar cor padrão do tema"
+              >
+                <RotateCcw className="w-3 h-3" />
+                <span>Usar cor do tema</span>
+              </button>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              value={data.nameColor || (theme?.textColor?.startsWith('#') ? theme.textColor : '#ffffff')}
+              onChange={(e) => onChange({ ...data, nameColor: e.target.value })}
+              className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0"
+            />
+            <input
+              type="text"
+              value={data.nameColor || ''}
+              onChange={(e) => onChange({ ...data, nameColor: e.target.value })}
+              placeholder={theme?.textColor || 'Padrão do tema'}
+              className="flex-1 px-2.5 py-1 text-xs rounded bg-studio-input border border-studio-border text-white font-mono placeholder:text-slate-500 focus:outline-none focus:border-brand-500"
+            />
+          </div>
+
+          {/* Quick Swatches for Title */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+            {['#ffffff', '#090a0f', '#10b981', '#3b82f6', '#6366f1', '#ec4899', '#f59e0b'].map((hex) => (
+              <button
+                key={hex}
+                type="button"
+                onClick={() => onChange({ ...data, nameColor: hex })}
+                className={`w-6 h-6 rounded-full border transition-transform hover:scale-110 flex-shrink-0 ${
+                  data.nameColor === hex ? 'border-white ring-2 ring-brand-500 scale-105' : 'border-studio-border'
+                }`}
+                style={{ backgroundColor: hex }}
+                title={hex}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* 2. Cor do Subtítulo (3 opções obrigatórias: branco, cinza ou preto) */}
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-300">Cor do Subtítulo (Bio / Descrição):</span>
+            {data.bioColorChoice && (
+              <button
+                type="button"
+                onClick={() => {
+                  const updated = { ...data };
+                  delete updated.bioColorChoice;
+                  delete updated.bioColor;
+                  onChange(updated);
+                }}
+                className="text-[11px] text-slate-400 hover:text-brand-300 flex items-center gap-1 transition-colors"
+                title="Restaurar cor padrão do tema"
+              >
+                <RotateCcw className="w-3 h-3" />
+                <span>Padrão do tema</span>
+              </button>
+            )}
+          </div>
+
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { id: 'white', label: 'Branco', hex: '#ffffff', dotBorder: 'border-slate-300' },
+              { id: 'gray', label: 'Cinza', hex: '#94a3b8', dotBorder: 'border-slate-500' },
+              { id: 'black', label: 'Preto', hex: '#090a0f', dotBorder: 'border-slate-700' },
+            ].map((option) => {
+              const isSelected = data.bioColorChoice === option.id;
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => onChange({ ...data, bioColorChoice: option.id as any })}
+                  className={`py-2 px-2 rounded-xl border flex items-center justify-center gap-2 transition-all ${
+                    isSelected
+                      ? 'bg-brand-500/20 border-brand-500 text-brand-300 shadow-md ring-2 ring-brand-500/50 font-bold'
+                      : 'bg-studio-card border-studio-border text-slate-300 hover:border-slate-700 hover:text-white'
+                  }`}
+                >
+                  <span
+                    className={`w-3.5 h-3.5 rounded-full border shadow-sm flex-shrink-0 ${option.dotBorder}`}
+                    style={{ backgroundColor: option.hex }}
+                  />
+                  <span className="text-xs">{option.label}</span>
+                </button>
+              );
+            })}
+          </div>
+          <span className="text-[10px] text-slate-400 block">
+            Escolha entre branco, cinza ou preto para garantir a leitura perfeita em qualquer cor de fundo.
+          </span>
+        </div>
       </div>
 
       {/* Verified Badge Toggle */}

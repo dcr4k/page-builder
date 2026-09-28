@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Sparkles,
   Globe,
@@ -109,12 +109,12 @@ export const LinkInspector: React.FC<LinkInspectorProps> = ({ data, onChange, th
   const fileInputRef = useRef<HTMLInputElement>(null);
   const currentLayout = data.layout || 'classic';
   const currentEffect = data.highlightEffect || (data.highlight ? 'pulse' : 'none');
-  const hasCustomColors = Boolean(data.customBgColor || data.customTextColor || data.styleOverride !== 'default');
+  const [activeDuoButtonTab, setActiveDuoButtonTab] = useState<'btn1' | 'btn2'>('btn1');
 
   const baseButtonStyle = getButtonStyle(theme, data.styleOverride);
   const buttonClasses = getButtonClasses(theme, data.styleOverride);
 
-  // Apply custom colors if specified with contrast safeguard
+  // Apply custom colors if specified with contrast safeguard (Button 1)
   const previewStyle: React.CSSProperties = {
     ...baseButtonStyle,
   };
@@ -135,6 +135,44 @@ export const LinkInspector: React.FC<LinkInspectorProps> = ({ data, onChange, th
     previewStyle.borderWidth = '2px';
     previewStyle.borderStyle = 'solid';
   }
+
+  // Secondary Button Styles & Colors (Button 2 in Duo mode)
+  const secondaryStyleOverride = data.secondaryStyleOverride || (data.secondaryCustomBgColor ? 'default' : 'outline');
+  const secondaryBaseStyle = getButtonStyle(theme, secondaryStyleOverride);
+  const secondaryButtonClasses = getButtonClasses(theme, secondaryStyleOverride);
+
+  const secondaryPreviewStyle: React.CSSProperties = {
+    ...secondaryBaseStyle,
+  };
+
+  if (data.secondaryCustomBgColor) {
+    secondaryPreviewStyle.backgroundColor = data.secondaryCustomBgColor;
+    if (data.secondaryCustomTextColor) {
+      secondaryPreviewStyle.color = data.secondaryCustomTextColor;
+    } else {
+      secondaryPreviewStyle.color = isLightColor(data.secondaryCustomBgColor) ? '#0f172a' : '#ffffff';
+    }
+  } else {
+    secondaryPreviewStyle.backgroundColor = theme.cardBackground;
+    secondaryPreviewStyle.borderColor = theme.cardBorderColor;
+    secondaryPreviewStyle.color = theme.textColor;
+  }
+
+  if (data.secondaryCustomTextColor) {
+    secondaryPreviewStyle.color = data.secondaryCustomTextColor;
+  }
+
+  if (data.secondaryCustomBorderColor) {
+    secondaryPreviewStyle.borderColor = data.secondaryCustomBorderColor;
+    secondaryPreviewStyle.borderWidth = '2px';
+    secondaryPreviewStyle.borderStyle = 'solid';
+  }
+
+  const hasCustomColorsBtn1 = Boolean(data.customBgColor || data.customTextColor || data.customBorderColor || (data.styleOverride && data.styleOverride !== 'default'));
+  const hasCustomColorsBtn2 = Boolean(data.secondaryCustomBgColor || data.secondaryCustomTextColor || data.secondaryCustomBorderColor || data.secondaryStyleOverride);
+  const hasCustomColors = currentLayout === 'duo'
+    ? (activeDuoButtonTab === 'btn1' ? hasCustomColorsBtn1 : hasCustomColorsBtn2)
+    : hasCustomColorsBtn1;
 
   const handleLayoutChange = (newLayout: 'classic' | 'featured' | 'card-thumb' | 'duo') => {
     const updated: LinkBlockData = {
@@ -162,7 +200,27 @@ export const LinkInspector: React.FC<LinkInspectorProps> = ({ data, onChange, th
     onChange(updated);
   };
 
+  const handleSecondaryStyleOverrideChange = (styleId: 'default' | 'primary' | 'outline' | 'glass') => {
+    const updated = {
+      ...data,
+      secondaryStyleOverride: styleId,
+    };
+    delete updated.secondaryCustomBgColor;
+    delete updated.secondaryCustomTextColor;
+    delete updated.secondaryCustomBorderColor;
+    onChange(updated);
+  };
+
   const handleResetColors = () => {
+    if (currentLayout === 'duo' && activeDuoButtonTab === 'btn2') {
+      const updated = { ...data };
+      delete updated.secondaryCustomBgColor;
+      delete updated.secondaryCustomTextColor;
+      delete updated.secondaryCustomBorderColor;
+      delete updated.secondaryStyleOverride;
+      onChange(updated);
+      return;
+    }
     const updated = { ...data };
     delete updated.customBgColor;
     delete updated.customTextColor;
@@ -443,106 +501,267 @@ export const LinkInspector: React.FC<LinkInspectorProps> = ({ data, onChange, th
         <div className="flex items-center justify-between">
           <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
             <Palette className="w-3.5 h-3.5 text-brand-400" />
-            <span>Cores & Estilo do Botão</span>
+            <span>Cores & Estilo {currentLayout === 'duo' ? 'dos Botões' : 'do Botão'}</span>
           </label>
           {hasCustomColors && (
             <button
               type="button"
               onClick={handleResetColors}
-              className="text-[11px] text-slate-400 hover:text-brand-300 flex items-center gap-1"
+              className="text-[11px] text-slate-400 hover:text-brand-300 flex items-center gap-1 transition-colors"
               title="Restaurar cores padrão do tema"
             >
               <RotateCcw className="w-3 h-3" />
-              <span>Usar cor do tema</span>
+              <span>{currentLayout === 'duo' && activeDuoButtonTab === 'btn2' ? 'Restaurar Botão 2' : 'Usar cor do tema'}</span>
             </button>
           )}
         </div>
 
-        {/* Style Preset Override */}
-        <div>
-          <span className="text-[11px] text-slate-400 block mb-1.5 font-medium">Variação de Estilo:</span>
-          <div className="grid grid-cols-4 gap-1.5">
-            {[
-              { id: 'default', label: 'Padrão', desc: 'Tema' },
-              { id: 'primary', label: 'Destaque', desc: 'Contraste' },
-              { id: 'outline', label: 'Contorno', desc: 'Borda' },
-              { id: 'glass', label: 'Vidro', desc: 'Glass' },
-            ].map((v) => {
-              const isSelected = (data.styleOverride || 'default') === v.id;
-              return (
-                <button
-                  key={v.id}
-                  type="button"
-                  onClick={() => handleStyleOverrideChange(v.id as any)}
-                  className={`py-2 px-1 text-xs font-semibold rounded-xl border flex flex-col items-center justify-center gap-0.5 transition-all ${
-                    isSelected
-                      ? 'bg-brand-500/20 border-brand-500 text-brand-300 shadow-md ring-2 ring-brand-500/50 scale-[1.02]'
-                      : 'bg-studio-card border-studio-border text-slate-300 hover:border-slate-700 hover:bg-studio-panel'
-                  }`}
-                >
-                  <span>{v.label}</span>
-                  <span className="text-[9px] opacity-60 font-normal">{v.desc}</span>
-                </button>
-              );
-            })}
+        {/* Tab switcher when in Duo mode */}
+        {currentLayout === 'duo' && (
+          <div className="flex rounded-xl bg-studio-black p-1 border border-studio-border">
+            <button
+              type="button"
+              onClick={() => setActiveDuoButtonTab('btn1')}
+              className={`flex-1 py-1.5 px-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                activeDuoButtonTab === 'btn1'
+                  ? 'bg-brand-500 text-white shadow-sm ring-1 ring-brand-400'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-studio-panel'
+              }`}
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span>Botão 1 (Principal)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveDuoButtonTab('btn2')}
+              className={`flex-1 py-1.5 px-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                activeDuoButtonTab === 'btn2'
+                  ? 'bg-brand-500 text-white shadow-sm ring-1 ring-brand-400'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-studio-panel'
+              }`}
+            >
+              <span className="w-2 h-2 rounded-full bg-cyan-400" />
+              <span>Botão 2 (Secundário)</span>
+            </button>
           </div>
-        </div>
+        )}
 
-        {/* Background Color */}
-        <div>
-          <span className="text-[11px] text-slate-400 block mb-1">Cor de Fundo do Botão:</span>
-          <div className="flex items-center gap-2 mb-2">
-            <input
-              type="color"
-              value={data.customBgColor || (typeof previewStyle.backgroundColor === 'string' && previewStyle.backgroundColor.startsWith('#') ? previewStyle.backgroundColor : '#6366f1')}
-              onChange={(e) => onChange({ ...data, customBgColor: e.target.value })}
-              className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0"
-            />
-            <input
-              type="text"
-              value={data.customBgColor || ''}
-              onChange={(e) => onChange({ ...data, customBgColor: e.target.value })}
-              placeholder={typeof previewStyle.backgroundColor === 'string' ? previewStyle.backgroundColor : 'Padrão do tema'}
-              className="flex-1 px-2.5 py-1 text-xs rounded bg-studio-input border border-studio-border text-white font-mono placeholder:text-slate-500"
-            />
-          </div>
+        {/* CONTROLS FOR BUTTON 1 (Or Single Button) */}
+        {(currentLayout !== 'duo' || activeDuoButtonTab === 'btn1') && (
+          <div className="space-y-3">
+            {/* Style Preset Override */}
+            <div>
+              <span className="text-[11px] text-slate-400 block mb-1.5 font-medium">Variação de Estilo:</span>
+              <div className="grid grid-cols-4 gap-1.5">
+                {[
+                  { id: 'default', label: 'Padrão', desc: 'Tema' },
+                  { id: 'primary', label: 'Destaque', desc: 'Contraste' },
+                  { id: 'outline', label: 'Contorno', desc: 'Borda' },
+                  { id: 'glass', label: 'Vidro', desc: 'Glass' },
+                ].map((v) => {
+                  const isSelected = (data.styleOverride || 'default') === v.id;
+                  return (
+                    <button
+                      key={v.id}
+                      type="button"
+                      onClick={() => handleStyleOverrideChange(v.id as any)}
+                      className={`py-2 px-1 text-xs font-semibold rounded-xl border flex flex-col items-center justify-center gap-0.5 transition-all ${
+                        isSelected
+                          ? 'bg-brand-500/20 border-brand-500 text-brand-300 shadow-md ring-2 ring-brand-500/50 scale-[1.02]'
+                          : 'bg-studio-card border-studio-border text-slate-300 hover:border-slate-700 hover:bg-studio-panel'
+                      }`}
+                    >
+                      <span>{v.label}</span>
+                      <span className="text-[9px] opacity-60 font-normal">{v.desc}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
-          {/* Quick Swatches for Background */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
-            {BUTTON_COLOR_SWATCHES.map((hex) => (
-              <button
-                key={hex}
-                type="button"
-                onClick={() => onChange({ ...data, customBgColor: hex })}
-                className={`w-6 h-6 rounded-full border transition-transform hover:scale-110 flex-shrink-0 ${
-                  data.customBgColor === hex ? 'border-white ring-2 ring-brand-500 scale-105' : 'border-studio-border'
-                }`}
-                style={{ backgroundColor: hex }}
-                title={hex}
-              />
-            ))}
-          </div>
-        </div>
+            {/* Background Color */}
+            <div>
+              <span className="text-[11px] text-slate-400 block mb-1">Cor de Fundo do Botão 1:</span>
+              <div className="flex items-center gap-2 mb-2">
+                <input
+                  type="color"
+                  value={data.customBgColor || (typeof previewStyle.backgroundColor === 'string' && previewStyle.backgroundColor.startsWith('#') ? previewStyle.backgroundColor : '#6366f1')}
+                  onChange={(e) => onChange({ ...data, customBgColor: e.target.value })}
+                  className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0"
+                />
+                <input
+                  type="text"
+                  value={data.customBgColor || ''}
+                  onChange={(e) => onChange({ ...data, customBgColor: e.target.value })}
+                  placeholder={typeof previewStyle.backgroundColor === 'string' ? previewStyle.backgroundColor : 'Padrão do tema'}
+                  className="flex-1 px-2.5 py-1 text-xs rounded bg-studio-input border border-studio-border text-white font-mono placeholder:text-slate-500 focus:outline-none focus:border-brand-500"
+                />
+              </div>
 
-        {/* Text Color */}
-        <div>
-          <span className="text-[11px] text-slate-400 block mb-1">Cor do Texto do Botão:</span>
-          <div className="flex items-center gap-2">
-            <input
-              type="color"
-              value={data.customTextColor || (typeof previewStyle.color === 'string' && previewStyle.color.startsWith('#') ? previewStyle.color : '#ffffff')}
-              onChange={(e) => onChange({ ...data, customTextColor: e.target.value })}
-              className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0"
-            />
-            <input
-              type="text"
-              value={data.customTextColor || ''}
-              onChange={(e) => onChange({ ...data, customTextColor: e.target.value })}
-              placeholder={typeof previewStyle.color === 'string' ? previewStyle.color : 'Padrão do tema'}
-              className="flex-1 px-2.5 py-1 text-xs rounded bg-studio-input border border-studio-border text-white font-mono placeholder:text-slate-500"
-            />
+              {/* Quick Swatches for Background */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+                {BUTTON_COLOR_SWATCHES.map((hex) => (
+                  <button
+                    key={hex}
+                    type="button"
+                    onClick={() => onChange({ ...data, customBgColor: hex })}
+                    className={`w-6 h-6 rounded-full border transition-transform hover:scale-110 flex-shrink-0 ${
+                      data.customBgColor === hex ? 'border-white ring-2 ring-brand-500 scale-105' : 'border-studio-border'
+                    }`}
+                    style={{ backgroundColor: hex }}
+                    title={hex}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Text Color */}
+            <div>
+              <span className="text-[11px] text-slate-400 block mb-1">Cor do Texto do Botão 1:</span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={data.customTextColor || (typeof previewStyle.color === 'string' && previewStyle.color.startsWith('#') ? previewStyle.color : '#ffffff')}
+                  onChange={(e) => onChange({ ...data, customTextColor: e.target.value })}
+                  className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0"
+                />
+                <input
+                  type="text"
+                  value={data.customTextColor || ''}
+                  onChange={(e) => onChange({ ...data, customTextColor: e.target.value })}
+                  placeholder={typeof previewStyle.color === 'string' ? previewStyle.color : 'Padrão do tema'}
+                  className="flex-1 px-2.5 py-1 text-xs rounded bg-studio-input border border-studio-border text-white font-mono placeholder:text-slate-500 focus:outline-none focus:border-brand-500"
+                />
+              </div>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* CONTROLS FOR BUTTON 2 (Duo mode) */}
+        {currentLayout === 'duo' && activeDuoButtonTab === 'btn2' && (
+          <div className="space-y-3">
+            {/* Style Preset Override */}
+            <div>
+              <span className="text-[11px] text-slate-400 block mb-1.5 font-medium">Variação de Estilo do Botão 2:</span>
+              <div className="grid grid-cols-4 gap-1.5">
+                {[
+                  { id: 'outline', label: 'Contorno', desc: 'Borda (Padrão)' },
+                  { id: 'default', label: 'Padrão', desc: 'Tema' },
+                  { id: 'primary', label: 'Destaque', desc: 'Contraste' },
+                  { id: 'glass', label: 'Vidro', desc: 'Glass' },
+                ].map((v) => {
+                  const isSelected = (data.secondaryStyleOverride || 'outline') === v.id;
+                  return (
+                    <button
+                      key={v.id}
+                      type="button"
+                      onClick={() => handleSecondaryStyleOverrideChange(v.id as any)}
+                      className={`py-2 px-1 text-xs font-semibold rounded-xl border flex flex-col items-center justify-center gap-0.5 transition-all ${
+                        isSelected
+                          ? 'bg-brand-500/20 border-brand-500 text-brand-300 shadow-md ring-2 ring-brand-500/50 scale-[1.02]'
+                          : 'bg-studio-card border-studio-border text-slate-300 hover:border-slate-700 hover:bg-studio-panel'
+                      }`}
+                    >
+                      <span>{v.label}</span>
+                      <span className="text-[9px] opacity-60 font-normal">{v.desc}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Background Color for Button 2 */}
+            <div>
+              <span className="text-[11px] text-slate-400 block mb-1">Cor de Fundo do Botão 2:</span>
+              <div className="flex items-center gap-2 mb-2">
+                <input
+                  type="color"
+                  value={data.secondaryCustomBgColor || (typeof secondaryPreviewStyle.backgroundColor === 'string' && secondaryPreviewStyle.backgroundColor.startsWith('#') ? secondaryPreviewStyle.backgroundColor : '#1e293b')}
+                  onChange={(e) => onChange({ ...data, secondaryCustomBgColor: e.target.value })}
+                  className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0"
+                />
+                <input
+                  type="text"
+                  value={data.secondaryCustomBgColor || ''}
+                  onChange={(e) => onChange({ ...data, secondaryCustomBgColor: e.target.value })}
+                  placeholder={typeof secondaryPreviewStyle.backgroundColor === 'string' ? secondaryPreviewStyle.backgroundColor : 'Transparente / Card'}
+                  className="flex-1 px-2.5 py-1 text-xs rounded bg-studio-input border border-studio-border text-white font-mono placeholder:text-slate-500 focus:outline-none focus:border-brand-500"
+                />
+              </div>
+
+              {/* Quick Swatches for Button 2 Background */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+                {BUTTON_COLOR_SWATCHES.map((hex) => (
+                  <button
+                    key={hex}
+                    type="button"
+                    onClick={() => onChange({ ...data, secondaryCustomBgColor: hex })}
+                    className={`w-6 h-6 rounded-full border transition-transform hover:scale-110 flex-shrink-0 ${
+                      data.secondaryCustomBgColor === hex ? 'border-white ring-2 ring-brand-500 scale-105' : 'border-studio-border'
+                    }`}
+                    style={{ backgroundColor: hex }}
+                    title={hex}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Text Color for Button 2 */}
+            <div>
+              <span className="text-[11px] text-slate-400 block mb-1">Cor do Texto do Botão 2:</span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={data.secondaryCustomTextColor || (typeof secondaryPreviewStyle.color === 'string' && secondaryPreviewStyle.color.startsWith('#') ? secondaryPreviewStyle.color : '#ffffff')}
+                  onChange={(e) => onChange({ ...data, secondaryCustomTextColor: e.target.value })}
+                  className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0"
+                />
+                <input
+                  type="text"
+                  value={data.secondaryCustomTextColor || ''}
+                  onChange={(e) => onChange({ ...data, secondaryCustomTextColor: e.target.value })}
+                  placeholder={typeof secondaryPreviewStyle.color === 'string' ? secondaryPreviewStyle.color : 'Padrão do tema'}
+                  className="flex-1 px-2.5 py-1 text-xs rounded bg-studio-input border border-studio-border text-white font-mono placeholder:text-slate-500 focus:outline-none focus:border-brand-500"
+                />
+              </div>
+            </div>
+
+            {/* Border Color for Button 2 */}
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[11px] text-slate-400">Cor da Borda do Botão 2:</span>
+                {data.secondaryCustomBorderColor && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const updated = { ...data };
+                      delete updated.secondaryCustomBorderColor;
+                      onChange(updated);
+                    }}
+                    className="text-[10px] text-slate-500 hover:text-slate-300"
+                  >
+                    Limpar borda
+                  </button>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={data.secondaryCustomBorderColor || '#38bdf8'}
+                  onChange={(e) => onChange({ ...data, secondaryCustomBorderColor: e.target.value })}
+                  className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0"
+                />
+                <input
+                  type="text"
+                  value={data.secondaryCustomBorderColor || ''}
+                  onChange={(e) => onChange({ ...data, secondaryCustomBorderColor: e.target.value })}
+                  placeholder="Ex: #38bdf8 (Opcional)"
+                  className="flex-1 px-2.5 py-1 text-xs rounded bg-studio-input border border-studio-border text-white font-mono placeholder:text-slate-500 focus:outline-none focus:border-brand-500"
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Highlight Attention Effects with Dedicated Live Previews */}
@@ -601,13 +820,8 @@ export const LinkInspector: React.FC<LinkInspectorProps> = ({ data, onChange, th
                   <span className="truncate">{data.title || 'Botão 1'}</span>
                 </div>
                 <div
-                  className={`w-full py-2.5 px-2 flex items-center justify-center gap-1 text-center text-xs font-bold ${buttonClasses}`}
-                  style={{
-                    ...previewStyle,
-                    backgroundColor: theme.cardBackground,
-                    borderColor: theme.cardBorderColor,
-                    color: theme.textColor,
-                  }}
+                  className={`w-full py-2.5 px-2 flex items-center justify-center gap-1 text-center text-xs font-bold ${secondaryButtonClasses}`}
+                  style={secondaryPreviewStyle}
                 >
                   <ExternalLink className="w-3 h-3 opacity-70" />
                   <span className="truncate">{data.secondaryTitle || 'Botão 2'}</span>

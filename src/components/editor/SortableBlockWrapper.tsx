@@ -95,8 +95,6 @@ export const SortableBlockWrapper: React.FC<SortableBlockWrapperProps> = ({
           ? 'guide-target-block ring-2 ring-brand-400 bg-brand-500/10'
           : isSelected
           ? 'ring-2 ring-brand-500 shadow-[0_0_25px_rgba(0,229,153,0.35)]'
-          : showDragHint && isFirst
-          ? 'ring-2 ring-brand-400/80 shadow-[0_0_20px_rgba(0,229,153,0.3)]'
           : 'hover:ring-1 hover:ring-brand-400/50'
       }`}
     >
@@ -112,31 +110,6 @@ export const SortableBlockWrapper: React.FC<SortableBlockWrapperProps> = ({
             <span>Mover para o lado deste bloco</span>
           </div>
         </>
-      )}
-
-      {/* Visual onboarding hint directly centered on the first block */}
-      {showDragHint && isFirst && !isDeleting && !isTargetGuide && (
-        <div
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => e.stopPropagation()}
-          className="absolute top-2.5 left-1/2 -translate-x-1/2 z-30 max-w-[92%] bg-studio-panel/95 backdrop-blur-md text-white text-[11px] font-semibold px-3 py-1.5 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.8)] border border-brand-500/50 flex items-center justify-center gap-1.5 transition-all animate-pulse"
-        >
-          <div className="w-4 h-4 rounded-full bg-brand-500/20 flex items-center justify-center flex-shrink-0">
-            <ArrowUpDown className="w-2.5 h-2.5 text-brand-400" />
-          </div>
-          <span className="truncate">Segure e arraste este bloco para reordenar</span>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDismissDragHint?.();
-            }}
-            className="w-4 h-4 rounded-full hover:bg-white/20 flex items-center justify-center text-slate-400 hover:text-white transition-colors ml-0.5 flex-shrink-0"
-            title="Fechar dica"
-          >
-            <X className="w-3 h-3" />
-          </button>
-        </div>
       )}
 
       {/* Floating Action Bar when selected */}

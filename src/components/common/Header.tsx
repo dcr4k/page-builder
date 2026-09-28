@@ -9,6 +9,7 @@ import {
   FileDown,
 } from 'lucide-react';
 import type { AppView } from '../../types';
+import logoImg from '../../assets/logo.png';
 
 interface HeaderProps {
   currentView: AppView;
@@ -52,7 +53,7 @@ export const Header: React.FC<HeaderProps> = ({
 
         <div className="flex items-center gap-1.5">
           <img
-            src="/logo.png"
+            src={logoImg}
             alt="BioCraft Studio"
             className="w-7 h-7 rounded-full object-contain shadow-md border border-brand-500/40"
           />

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Smartphone, Tablet, Monitor, Code2, QrCode, X } from 'lucide-react';
-import { Block, PageTheme, ViewportMode } from '../../types';
+import { ArrowLeft, Smartphone, Code2, QrCode, X } from 'lucide-react';
+import { Block, PageTheme } from '../../types';
 import { BlockRenderer } from '../blocks/BlockRenderer';
 import { getBackgroundStyle } from '../../utils/themeStyles';
 
@@ -17,16 +17,9 @@ export const LivePreviewScreen: React.FC<LivePreviewScreenProps> = ({
   onBackToEditor,
   onOpenExportModal,
 }) => {
-  const [viewport, setViewport] = useState<ViewportMode>('mobile');
   const [showQrCode, setShowQrCode] = useState(false);
 
   const bgStyle = getBackgroundStyle(theme);
-
-  const widthMap = {
-    mobile: 'max-w-[420px]',
-    tablet: 'max-w-[640px]',
-    desktop: 'max-w-[860px]',
-  };
 
   return (
     <div
@@ -66,44 +59,10 @@ export const LivePreviewScreen: React.FC<LivePreviewScreenProps> = ({
 
         <div className="h-4 w-[1px] bg-studio-border" />
 
-        {/* Viewport switch */}
-        <div className="flex items-center gap-1 bg-studio-black p-1 rounded-xl border border-studio-border">
-          <button
-            type="button"
-            onClick={() => setViewport('mobile')}
-            className={`p-1.5 rounded-lg text-xs transition-colors ${
-              viewport === 'mobile'
-                ? 'bg-brand-500 text-black font-bold shadow-md shadow-brand-500/20'
-                : 'text-zinc-400 hover:text-white'
-            }`}
-            title="Simulador Smartphone"
-          >
-            <Smartphone className="w-3.5 h-3.5" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewport('tablet')}
-            className={`p-1.5 rounded-lg text-xs transition-colors ${
-              viewport === 'tablet'
-                ? 'bg-brand-500 text-black font-bold shadow-md shadow-brand-500/20'
-                : 'text-zinc-400 hover:text-white'
-            }`}
-            title="Simulador Tablet"
-          >
-            <Tablet className="w-3.5 h-3.5" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewport('desktop')}
-            className={`p-1.5 rounded-lg text-xs transition-colors ${
-              viewport === 'desktop'
-                ? 'bg-brand-500 text-black font-bold shadow-md shadow-brand-500/20'
-                : 'text-zinc-400 hover:text-white'
-            }`}
-            title="Simulador Desktop"
-          >
-            <Monitor className="w-3.5 h-3.5" />
-          </button>
+        {/* Mobile View Indicator */}
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-brand-500/10 border border-brand-500/30 text-brand-400 text-xs font-bold">
+          <Smartphone className="w-3.5 h-3.5" />
+          <span>Mobile</span>
         </div>
 
         <div className="h-4 w-[1px] bg-studio-border" />
@@ -168,10 +127,10 @@ export const LivePreviewScreen: React.FC<LivePreviewScreenProps> = ({
         </div>
       )}
 
-      {/* Live Content Container */}
+      {/* Live Content Container (Exclusively Smartphone View) */}
       <main className="flex-1 w-full flex flex-col items-center pt-24 pb-16 px-4">
         <div
-          className={`w-full ${widthMap[viewport]} mx-auto flex flex-col gap-3.5 transition-all duration-300`}
+          className="w-full max-w-[420px] mx-auto flex flex-col gap-3.5 transition-all duration-300"
           style={{ fontFamily: theme.fontFamily }}
         >
           {blocks.map((block) => (

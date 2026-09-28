@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import confetti from 'canvas-confetti';
 import { TEMPLATES } from './data/templates';
 import { createDefaultBlock } from './data/blockPresets';
 import type { AppView, Block, BlockType, PageTheme, Template } from './types';
@@ -11,6 +10,7 @@ import { CanvasArea } from './components/editor/CanvasArea';
 import { LivePreviewScreen } from './components/preview/LivePreviewScreen';
 import { ExportCodeModal } from './components/modals/ExportCodeModal';
 import { ImportExportModal } from './components/modals/ImportExportModal';
+import { GlobalLoadingOverlay } from './components/common/GlobalLoadingOverlay';
 
 import { MobileBottomNav } from './components/mobile/MobileBottomNav';
 import { MobileBottomSheet } from './components/mobile/MobileBottomSheet';
@@ -28,6 +28,10 @@ export const App: React.FC = () => {
   // App views: 'picker' | 'editor' | 'preview'
   const [currentView, setCurrentView] = useState<AppView>('picker');
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+
+  // Global layout selection loading state (2 seconds with spinning logo)
+  const [isLoadingLayout, setIsLoadingLayout] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('Carregando layout');
 
   // Active theme and blocks
   const [theme, setTheme] = useState<PageTheme>(TEMPLATES[0].theme);
@@ -110,15 +114,11 @@ export const App: React.FC = () => {
 
   // Handle template selection from initial screen
   const handleSelectTemplate = (template: Template) => {
-    try {
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.75 },
-      });
-    } catch {
-      // ignore
-    }
+    setIsLoadingLayout(true);
+    setLoadingMessage(template.id === 'comecar-do-zero' ? 'Iniciando página em branco' : `Carregando ${template.name}`);
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as any });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
 
     const initialTheme = JSON.parse(JSON.stringify(template.theme));
     const initialBlocks = JSON.parse(JSON.stringify(template.blocks));
@@ -138,8 +138,23 @@ export const App: React.FC = () => {
 
     saveProjectToStorage(initialTheme, initialBlocks, template.id);
     setIsSaved(true);
-    setCurrentView('editor');
+
+    // 2-second loading animation with spinning logo as requested by user
+    setTimeout(() => {
+      setIsLoadingLayout(false);
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' as any });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      setCurrentView('editor');
+    }, 2000);
   };
+
+  // Ensure scroll is at top whenever view changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as any });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [currentView]);
 
   // Undo action
   const handleUndo = useCallback(() => {
@@ -320,10 +335,16 @@ export const App: React.FC = () => {
   // View 1: Template Picker Screen
   if (currentView === 'picker') {
     return (
-      <TemplatePicker
-        templates={TEMPLATES}
-        onSelectTemplate={handleSelectTemplate}
-      />
+      <>
+        <TemplatePicker
+          templates={TEMPLATES}
+          onSelectTemplate={handleSelectTemplate}
+        />
+        <GlobalLoadingOverlay
+          isVisible={isLoadingLayout}
+          message={loadingMessage}
+        />
+      </>
     );
   }
 
@@ -349,7 +370,7 @@ export const App: React.FC = () => {
 
   // View 3: Mobile-First Editor Mode
   return (
-    <div className="h-screen w-screen flex flex-col bg-studio-black text-slate-100 overflow-hidden relative">
+    <div className="fixed inset-0 h-full h-[100dvh] w-full flex flex-col bg-studio-black text-slate-100 overflow-hidden">
       {/* Header */}
       <Header
         currentView={currentView}
@@ -431,7 +452,7 @@ export const App: React.FC = () => {
       <MobileBottomSheet
         isOpen={isStyleSheetOpen}
         onClose={() => setIsStyleSheetOpen(false)}
-        title="Estilo Global da Página"
+        title="Estilo da Página"
         subtitle="Altere cores, fundos, fontes e formato dos botões"
       >
         <GlobalStyleInspector
@@ -477,6 +498,12 @@ export const App: React.FC = () => {
         theme={theme}
         blocks={blocks}
         onImport={handleImportProject}
+      />
+
+      {/* Global Loading Overlay */}
+      <GlobalLoadingOverlay
+        isVisible={isLoadingLayout}
+        message={loadingMessage}
       />
     </div>
   );

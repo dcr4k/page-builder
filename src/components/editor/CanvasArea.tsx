@@ -15,7 +15,7 @@ import {
   verticalListSortingStrategy,
   arrayMove,
 } from '@dnd-kit/sortable';
-import { Plus, Layers } from 'lucide-react';
+import { Plus, Layers, ArrowUpDown, X } from 'lucide-react';
 import type { Block, PageTheme } from '../../types';
 import { SortableBlockWrapper } from './SortableBlockWrapper';
 import { getBackgroundStyle } from '../../utils/themeStyles';
@@ -169,6 +169,31 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                 strategy={verticalListSortingStrategy}
               >
                 <div className="flex flex-col gap-3 py-1">
+                  {/* Reorder Onboarding Tip - Positioned cleanly ABOVE the blocks, NEVER covering content */}
+                  {showDragHint && blocks.length > 1 && (
+                    <div className="w-full py-2 px-3 rounded-2xl bg-studio-panel/95 border border-brand-500/40 text-slate-200 text-xs flex items-center justify-between gap-2 shadow-xl backdrop-blur-md animate-fade-in flex-shrink-0">
+                      <div className="flex items-center gap-2 truncate">
+                        <div className="w-5 h-5 rounded-full bg-brand-500/20 flex items-center justify-center flex-shrink-0">
+                          <ArrowUpDown className="w-3 h-3 text-brand-400" />
+                        </div>
+                        <span className="truncate text-[11px] font-semibold text-slate-200">
+                          Segure e arraste qualquer bloco para reordenar
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowDragHint(false);
+                        }}
+                        className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-studio-hover transition-colors flex-shrink-0"
+                        title="Fechar dica"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
+
                   {blocks.map((block, index) => (
                     <SortableBlockWrapper
                       key={block.id}

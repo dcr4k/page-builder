@@ -69,7 +69,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
             className="mt-4 px-3 py-1.5 rounded-lg bg-brand-500/10 text-brand-400 border border-brand-500/30 text-xs font-bold hover:bg-brand-500/20 transition-colors flex items-center gap-1.5"
           >
             <Palette className="w-3.5 h-3.5" />
-            <span>Editar Estilo Global da Página</span>
+            <span>Editar Estilo da Página</span>
           </button>
         </div>
       );
@@ -129,6 +129,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
           <ProfileInspector
             data={selectedBlock.data as any}
             onChange={(newData) => onUpdateBlock({ ...selectedBlock, data: newData as any })}
+            theme={theme}
           />
         )}
         {selectedBlock.type === 'link' && (
@@ -212,7 +213,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
           }`}
         >
           <Palette className="w-3.5 h-3.5" />
-          <span>Estilo Global</span>
+          <span>Estilo da Página</span>
         </button>
       </div>
 

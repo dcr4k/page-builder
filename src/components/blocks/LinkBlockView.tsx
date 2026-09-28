@@ -139,15 +139,41 @@ export const LinkBlockView: React.FC<LinkBlockViewProps> = ({ data, theme, isEdi
       </div>
     );
 
+    const secondaryStyleOverride = data.secondaryStyleOverride || (data.secondaryCustomBgColor ? 'default' : 'outline');
+    const secondaryBaseStyle = getButtonStyle(theme, secondaryStyleOverride);
+    const secondaryButtonClasses = getButtonClasses(theme, secondaryStyleOverride);
+
+    const secondaryFinalStyle: React.CSSProperties = {
+      ...secondaryBaseStyle,
+    };
+
+    if (data.secondaryCustomBgColor) {
+      secondaryFinalStyle.backgroundColor = data.secondaryCustomBgColor;
+      if (data.secondaryCustomTextColor) {
+        secondaryFinalStyle.color = data.secondaryCustomTextColor;
+      } else {
+        secondaryFinalStyle.color = isLightColor(data.secondaryCustomBgColor) ? '#0f172a' : '#ffffff';
+      }
+    } else {
+      secondaryFinalStyle.backgroundColor = theme.cardBackground;
+      secondaryFinalStyle.borderColor = theme.cardBorderColor;
+      secondaryFinalStyle.color = theme.textColor;
+    }
+
+    if (data.secondaryCustomTextColor) {
+      secondaryFinalStyle.color = data.secondaryCustomTextColor;
+    }
+
+    if (data.secondaryCustomBorderColor) {
+      secondaryFinalStyle.borderColor = data.secondaryCustomBorderColor;
+      secondaryFinalStyle.borderWidth = '2px';
+      secondaryFinalStyle.borderStyle = 'solid';
+    }
+
     const btn2 = (
       <div
-        className={`w-full py-3 px-2 flex items-center justify-center gap-1.5 text-center text-xs font-bold ${buttonClasses} shadow`}
-        style={{
-          ...finalStyle,
-          backgroundColor: theme.cardBackground,
-          borderColor: theme.cardBorderColor,
-          color: theme.textColor,
-        }}
+        className={`w-full py-3 px-2 flex items-center justify-center gap-1.5 text-center text-xs font-bold ${secondaryButtonClasses} shadow`}
+        style={secondaryFinalStyle}
       >
         <ExternalLink className="w-3.5 h-3.5 opacity-70" />
         <span className="truncate">{data.secondaryTitle || 'Opção 2'}</span>

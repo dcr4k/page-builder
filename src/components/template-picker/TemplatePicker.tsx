@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronLeft, ChevronRight, ArrowRight, Layers } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import type { Template } from '../../types';
 import { DeviceCardPreview } from './DeviceCardPreview';
 
@@ -140,16 +139,9 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({ templates, onSel
   };
 
   const handleSelectClick = () => {
-    try {
-      confetti({
-        particleCount: 55,
-        spread: 65,
-        origin: { y: 0.75 },
-        colors: ['#00e599', '#34d399', '#05cd88', '#ffffff'],
-      });
-    } catch {
-      // ignore
-    }
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as any });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
     onSelectTemplate(templates[currentIndex]);
   };
 
@@ -157,7 +149,7 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({ templates, onSel
 
   return (
     <div
-      className="h-screen h-[100dvh] w-full bg-[#090b0e] text-slate-100 flex flex-col justify-between py-2 sm:py-3 px-3 sm:px-6 relative overflow-hidden select-none"
+      className="fixed inset-0 h-full h-[100dvh] w-full bg-[#090b0e] text-slate-100 flex flex-col justify-between py-2 sm:py-3 px-3 sm:px-6 overflow-hidden select-none"
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
@@ -178,7 +170,7 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({ templates, onSel
       {/* 3D Cover Flow Carousel Stage */}
       <div
         ref={containerRef}
-        className="w-full flex-1 min-h-0 flex items-center justify-center relative z-10 touch-pan-y"
+        className="w-full flex-1 min-h-[300px] flex items-center justify-center relative z-10 touch-pan-y my-auto"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -186,7 +178,7 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({ templates, onSel
       >
         {/* Stage Container with 3D Perspective */}
         <div
-          className="relative w-full max-w-3xl h-[375px] sm:h-[425px] flex items-center justify-center cursor-grab active:cursor-grabbing"
+          className="relative w-full max-w-4xl h-[330px] sm:h-[358px] md:h-[372px] flex items-center justify-center cursor-grab active:cursor-grabbing"
           style={{
             perspective: '1100px',
             transformStyle: 'preserve-3d',
@@ -305,57 +297,50 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({ templates, onSel
 
           {/* Holographic Glowing Pedestal Stage Arc beneath the center phone */}
           <div
-            className="absolute left-1/2 -translate-x-1/2 pointer-events-none z-20 flex flex-col items-center"
-            style={{
-              top: 'calc(50% + 155px)',
-            }}
+            className="absolute left-1/2 -translate-x-1/2 pointer-events-none z-20 flex flex-col items-center top-[calc(50%+142px)] sm:top-[calc(50%+156px)] md:top-[calc(50%+163px)]"
           >
             {/* Luminous Green Pedestal Arc Ring */}
-            <div className="w-[240px] sm:w-[280px] h-[32px] sm:h-[36px] rounded-[100%] border-t-[2.5px] border-brand-500 shadow-[0_0_25px_#00e599,0_0_12px_#00e599,inset_0_0_10px_rgba(0,229,153,0.3)] bg-gradient-to-b from-brand-500/20 to-transparent blur-[0.5px] animate-pulse-subtle" />
+            <div className="w-[200px] sm:w-[230px] md:w-[245px] h-[26px] sm:h-[30px] rounded-[100%] border-t-[2.5px] border-brand-500 shadow-[0_0_25px_#00e599,0_0_12px_#00e599,inset_0_0_10px_rgba(0,229,153,0.3)] bg-gradient-to-b from-brand-500/20 to-transparent blur-[0.5px] animate-pulse-subtle" />
             {/* Floor Radial Glow */}
-            <div className="absolute top-1 w-[200px] h-6 bg-brand-500/30 rounded-full blur-lg pointer-events-none" />
+            <div className="absolute top-1 w-[160px] sm:w-[190px] h-5 bg-brand-500/30 rounded-full blur-lg pointer-events-none" />
           </div>
 
-          {/* Interactive Floating Arrow Navigation Buttons for Desktop */}
+          {/* Interactive Floating Arrow Navigation Buttons (Always in view on all screen sizes) */}
           <button
             type="button"
-            onClick={handlePrev}
+            onClick={(e) => {
+              e.stopPropagation();
+              handlePrev();
+            }}
             aria-label="Layout anterior"
-            className="hidden md:flex absolute left-4 z-40 w-10 h-10 rounded-full bg-studio-card/90 hover:bg-studio-hover text-white border border-studio-border hover:border-brand-500/50 shadow-2xl backdrop-blur-md items-center justify-center transition-all duration-200 active:scale-90"
+            className="flex absolute left-2 sm:left-4 md:left-6 z-40 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#12161f]/90 hover:bg-brand-500 text-white hover:text-black border border-zinc-700/80 hover:border-brand-500 shadow-[0_4px_25px_rgba(0,0,0,0.8),0_0_15px_rgba(0,229,153,0.25)] backdrop-blur-md items-center justify-center transition-all duration-200 hover:scale-105 active:scale-90 cursor-pointer group"
           >
-            <ChevronLeft className="w-5 h-5 text-slate-200" />
+            <ChevronLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
           </button>
 
           <button
             type="button"
-            onClick={handleNext}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleNext();
+            }}
             aria-label="Próximo layout"
-            className="hidden md:flex absolute right-4 z-40 w-10 h-10 rounded-full bg-studio-card/90 hover:bg-studio-hover text-white border border-studio-border hover:border-brand-500/50 shadow-2xl backdrop-blur-md items-center justify-center transition-all duration-200 active:scale-90"
+            className="flex absolute right-2 sm:right-4 md:right-6 z-40 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#12161f]/90 hover:bg-brand-500 text-white hover:text-black border border-zinc-700/80 hover:border-brand-500 shadow-[0_4px_25px_rgba(0,0,0,0.8),0_0_15px_rgba(0,229,153,0.25)] backdrop-blur-md items-center justify-center transition-all duration-200 hover:scale-105 active:scale-90 cursor-pointer group"
           >
-            <ChevronRight className="w-5 h-5 text-slate-200" />
+            <ChevronRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>
       </div>
 
       {/* Bottom Details, Dots & Primary Action Button (in flex flow, NEVER overlapping) */}
       <div className="w-full max-w-sm mx-auto flex flex-col items-center text-center px-4 z-20 flex-shrink-0 pb-1">
-        {/* Two Pills: Category & Badge */}
-        <div className="flex items-center justify-center gap-2 mb-1">
-          <span className="text-[11px] sm:text-xs px-3 py-0.5 rounded-full bg-studio-card text-slate-300 font-semibold border border-studio-border shadow-sm">
-            {currentTemplate.category}
-          </span>
-          <span className="text-[11px] sm:text-xs px-3 py-0.5 rounded-full bg-brand-500/15 text-brand-400 font-bold border border-brand-500/35 shadow-sm">
-            {currentTemplate.badge}
-          </span>
-        </div>
-
         {/* Template Title */}
         <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-tight">
           {currentTemplate.name}
         </h2>
 
         {/* Template Description */}
-        <p className="text-[11px] sm:text-xs text-slate-300 mt-0.5 line-clamp-2 px-1 font-normal leading-relaxed max-w-xs sm:max-w-sm">
+        <p className="text-[11px] sm:text-xs text-slate-300 mt-1 line-clamp-2 px-1 font-normal leading-relaxed max-w-xs sm:max-w-sm">
           {currentTemplate.description}
         </p>
 
@@ -391,10 +376,13 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({ templates, onSel
         <button
           type="button"
           onClick={() => {
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' as any });
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
             const blankTemplate = templates.find((t) => t.id === 'comecar-do-zero') || templates[0];
             onSelectTemplate(blankTemplate);
           }}
-          className="text-[11px] text-slate-400 hover:text-brand-400 transition-colors flex items-center gap-1 py-1 mt-1"
+          className="text-[11px] text-slate-400 hover:text-brand-400 transition-colors flex items-center gap-1 py-1 mt-1 cursor-pointer"
         >
           <Layers className="w-3.5 h-3.5" />
           <span>Ou começar com uma página em branco</span>

@@ -91,6 +91,7 @@ export const MobileBlockInspectorSheet: React.FC<MobileBlockInspectorSheetProps>
         <ProfileInspector
           data={block.data}
           onChange={(newData) => onUpdateBlock({ ...block, data: newData })}
+          theme={theme}
         />
       )}
       {block.type === 'link' && (

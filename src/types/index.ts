@@ -62,6 +62,9 @@ export interface ProfileBlockData {
   tagline?: string;
   coverUrl?: string;
   badges?: string[];
+  nameColor?: string;
+  bioColorChoice?: 'white' | 'gray' | 'black';
+  bioColor?: string;
 }
 
 export type LinkHighlightEffect = 'none' | 'pulse' | 'shimmer' | 'wobble' | 'glow';
@@ -82,6 +85,10 @@ export interface LinkBlockData {
   imageUrl?: string;
   secondaryTitle?: string;
   secondaryUrl?: string;
+  secondaryStyleOverride?: 'default' | 'primary' | 'outline' | 'glass';
+  secondaryCustomBgColor?: string;
+  secondaryCustomTextColor?: string;
+  secondaryCustomBorderColor?: string;
 }
 
 export interface SocialBlockData {

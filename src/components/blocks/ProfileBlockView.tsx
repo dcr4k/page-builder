@@ -16,6 +16,15 @@ export const ProfileBlockView: React.FC<ProfileBlockViewProps> = ({ data, theme 
 
   const layout = data.layout || 'center';
 
+  // Dynamic colors with user overrides
+  const titleColor = data.nameColor || theme.textColor;
+  const subtitleColor = (() => {
+    if (data.bioColorChoice === 'white') return '#ffffff';
+    if (data.bioColorChoice === 'gray') return '#94a3b8';
+    if (data.bioColorChoice === 'black') return '#090a0f';
+    return data.bioColor || theme.textSecondaryColor;
+  })();
+
   // Model 1: Perfil Hero com Imagem de Capa (Banner Cover)
   if (layout === 'hero-cover') {
     const coverUrl =
@@ -49,7 +58,7 @@ export const ProfileBlockView: React.FC<ProfileBlockViewProps> = ({ data, theme 
           <div className="flex items-center gap-1.5 justify-center flex-wrap">
             <h1
               className="text-lg sm:text-xl font-bold tracking-tight"
-              style={{ color: theme.textColor }}
+              style={{ color: titleColor }}
             >
               {data.name || 'Seu Nome'}
             </h1>
@@ -70,7 +79,7 @@ export const ProfileBlockView: React.FC<ProfileBlockViewProps> = ({ data, theme 
           {data.bio && (
             <p
               className="text-xs sm:text-sm mt-1.5 leading-relaxed max-w-sm"
-              style={{ color: theme.textSecondaryColor }}
+              style={{ color: subtitleColor }}
             >
               {data.bio}
             </p>
@@ -104,7 +113,7 @@ export const ProfileBlockView: React.FC<ProfileBlockViewProps> = ({ data, theme 
           <div className="flex items-center gap-1.5 flex-wrap">
             <h1
               className="text-base sm:text-lg font-bold tracking-tight truncate"
-              style={{ color: theme.textColor }}
+              style={{ color: titleColor }}
             >
               {data.name || 'Seu Nome'}
             </h1>
@@ -125,7 +134,7 @@ export const ProfileBlockView: React.FC<ProfileBlockViewProps> = ({ data, theme 
           {data.bio && (
             <p
               className="text-[11px] sm:text-xs mt-1 leading-snug line-clamp-2"
-              style={{ color: theme.textSecondaryColor }}
+              style={{ color: subtitleColor }}
             >
               {data.bio}
             </p>
@@ -160,7 +169,7 @@ export const ProfileBlockView: React.FC<ProfileBlockViewProps> = ({ data, theme 
         <div className="flex items-center gap-1.5 justify-center flex-wrap">
           <h1
             className="text-xl md:text-2xl font-bold tracking-tight"
-            style={{ color: theme.textColor }}
+            style={{ color: titleColor }}
           >
             {data.name || 'Seu Nome'}
           </h1>
@@ -198,7 +207,7 @@ export const ProfileBlockView: React.FC<ProfileBlockViewProps> = ({ data, theme 
         {data.bio && (
           <p
             className="text-xs sm:text-sm mt-2 leading-relaxed max-w-md"
-            style={{ color: theme.textSecondaryColor }}
+            style={{ color: subtitleColor }}
           >
             {data.bio}
           </p>
@@ -225,7 +234,7 @@ export const ProfileBlockView: React.FC<ProfileBlockViewProps> = ({ data, theme 
       <div className="flex items-center gap-1.5 justify-center flex-wrap">
         <h1
           className="text-xl md:text-2xl font-bold tracking-tight"
-          style={{ color: theme.textColor }}
+          style={{ color: titleColor }}
         >
           {data.name || 'Seu Nome'}
         </h1>
@@ -246,7 +255,7 @@ export const ProfileBlockView: React.FC<ProfileBlockViewProps> = ({ data, theme 
       {data.bio && (
         <p
           className="text-sm mt-2 leading-relaxed max-w-md"
-          style={{ color: theme.textSecondaryColor }}
+          style={{ color: subtitleColor }}
         >
           {data.bio}
         </p>
