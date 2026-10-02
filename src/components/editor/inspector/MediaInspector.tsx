@@ -1,10 +1,12 @@
 import React, { useRef } from 'react';
-import { Upload, Video, Image as ImageIcon, Layers, Camera, Columns } from 'lucide-react';
-import { MediaBlockData } from '../../../types';
+import { Upload, Video, Image as ImageIcon, Layers, Camera, Columns, Palette } from 'lucide-react';
+import { MediaBlockData, PageTheme } from '../../../types';
+import { TextColorSelector } from '../../common/TextColorSelector';
 
 interface MediaInspectorProps {
   data: MediaBlockData;
   onChange: (updated: MediaBlockData) => void;
+  theme?: PageTheme;
 }
 
 const PRESET_MEDIA_1 = [
@@ -19,7 +21,7 @@ const PRESET_MEDIA_2 = [
   'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80',
 ];
 
-export const MediaInspector: React.FC<MediaInspectorProps> = ({ data, onChange }) => {
+export const MediaInspector: React.FC<MediaInspectorProps> = ({ data, onChange, theme }) => {
   const fileInputRef1 = useRef<HTMLInputElement>(null);
   const fileInputRef2 = useRef<HTMLInputElement>(null);
 
@@ -300,6 +302,23 @@ export const MediaInspector: React.FC<MediaInspectorProps> = ({ data, onChange }
           </div>
         </div>
       )}
+
+      {/* Font Colors Section */}
+      <div className="pt-3 border-t border-studio-border space-y-3">
+        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+          <Palette className="w-3.5 h-3.5 text-brand-400" />
+          <span>Cores das Fontes</span>
+        </label>
+
+        {/* Caption Font Color (restricted to white, gray, black) */}
+        <TextColorSelector
+          label="Cor da Legenda"
+          value={data.captionColor}
+          defaultColor={currentLayout === 'polaroid' ? '#334155' : (theme?.textSecondaryColor || '#94a3b8')}
+          onChange={(color) => onChange({ ...data, captionColor: color })}
+          allowColorful={false}
+        />
+      </div>
     </div>
   );
 };

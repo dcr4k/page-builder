@@ -116,7 +116,7 @@ export const App: React.FC = () => {
   const handleSelectTemplate = (template: Template) => {
     setIsLoadingLayout(true);
     setLoadingMessage(template.id === 'comecar-do-zero' ? 'Iniciando página em branco' : `Carregando ${template.name}`);
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as any });
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
 
@@ -142,7 +142,7 @@ export const App: React.FC = () => {
     // 2-second loading animation with spinning logo as requested by user
     setTimeout(() => {
       setIsLoadingLayout(false);
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' as any });
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
       setCurrentView('editor');
@@ -151,7 +151,7 @@ export const App: React.FC = () => {
 
   // Ensure scroll is at top whenever view changes
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as any });
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
   }, [currentView]);
@@ -351,20 +351,11 @@ export const App: React.FC = () => {
   // View 2: Live Preview Screen
   if (currentView === 'preview') {
     return (
-      <>
-        <LivePreviewScreen
-          theme={theme}
-          blocks={blocks}
-          onBackToEditor={() => setCurrentView('editor')}
-          onOpenExportModal={() => setIsExportModalOpen(true)}
-        />
-        <ExportCodeModal
-          isOpen={isExportModalOpen}
-          onClose={() => setIsExportModalOpen(false)}
-          theme={theme}
-          blocks={blocks}
-        />
-      </>
+      <LivePreviewScreen
+        theme={theme}
+        blocks={blocks}
+        onBackToEditor={() => setCurrentView('editor')}
+      />
     );
   }
 
@@ -412,7 +403,6 @@ export const App: React.FC = () => {
         onOpenStyle={() => setIsStyleSheetOpen(true)}
         onOpenReorder={() => setIsReorderSheetOpen(true)}
         onOpenPreview={() => setCurrentView('preview')}
-        onOpenExport={() => setIsExportModalOpen(true)}
         hasBlocks={blocks.length > 0}
       />
 

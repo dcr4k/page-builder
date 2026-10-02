@@ -1,13 +1,15 @@
 import React from 'react';
-import { AlignLeft, AlignCenter, AlignRight, Layers, Plus, Trash2, Quote, AlertCircle, CheckCircle2, Type } from 'lucide-react';
-import { TextBlockData } from '../../../types';
+import { AlignLeft, AlignCenter, AlignRight, Layers, Plus, Trash2, Quote, AlertCircle, CheckCircle2, Type, Palette } from 'lucide-react';
+import { PageTheme, TextBlockData } from '../../../types';
+import { TextColorSelector } from '../../common/TextColorSelector';
 
 interface TextInspectorProps {
   data: TextBlockData;
   onChange: (updated: TextBlockData) => void;
+  theme?: PageTheme;
 }
 
-export const TextInspector: React.FC<TextInspectorProps> = ({ data, onChange }) => {
+export const TextInspector: React.FC<TextInspectorProps> = ({ data, onChange, theme }) => {
   const currentStyle = data.style || 'body';
 
   const handleStyleChange = (newStyle: 'heading' | 'quote' | 'callout' | 'checklist') => {
@@ -312,6 +314,49 @@ export const TextInspector: React.FC<TextInspectorProps> = ({ data, onChange }) 
           </div>
         </div>
       )}
+
+      {/* Font Colors Section */}
+      <div className="pt-3 border-t border-studio-border space-y-3">
+        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+          <Palette className="w-3.5 h-3.5 text-brand-400" />
+          <span>Cores das Fontes</span>
+        </label>
+
+        {/* Title / Heading Color */}
+        <TextColorSelector
+          label={currentStyle === 'quote' ? 'Cor do Nome do Autor' : 'Cor do Título / Cabeçalho'}
+          value={data.titleColor}
+          defaultColor={theme?.textColor || '#ffffff'}
+          onChange={(color) => onChange({ ...data, titleColor: color })}
+          allowColorful={true}
+        />
+
+        {/* Content / Body / Checklist Items Color */}
+        <TextColorSelector
+          label={
+            currentStyle === 'quote'
+              ? 'Cor da Frase da Citação'
+              : currentStyle === 'checklist'
+              ? 'Cor dos Tópicos'
+              : 'Cor do Texto / Conteúdo'
+          }
+          value={data.textColor}
+          defaultColor={currentStyle === 'quote' || currentStyle === 'checklist' ? (theme?.textColor || '#ffffff') : (theme?.textSecondaryColor || '#94a3b8')}
+          onChange={(color) => onChange({ ...data, textColor: color })}
+          allowColorful={false}
+        />
+
+        {/* Quote role/subtitle color if quote */}
+        {currentStyle === 'quote' && (
+          <TextColorSelector
+            label="Cor do Cargo / Subtítulo"
+            value={data.quoteAuthorColor}
+            defaultColor={theme?.textSecondaryColor || '#94a3b8'}
+            onChange={(color) => onChange({ ...data, quoteAuthorColor: color })}
+            allowColorful={false}
+          />
+        )}
+      </div>
     </div>
   );
 };

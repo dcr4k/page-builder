@@ -155,18 +155,21 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
           <ContactInspector
             data={selectedBlock.data as any}
             onChange={(newData) => onUpdateBlock({ ...selectedBlock, data: newData as any })}
+            theme={theme}
           />
         )}
         {selectedBlock.type === 'media' && (
           <MediaInspector
             data={selectedBlock.data as any}
             onChange={(newData) => onUpdateBlock({ ...selectedBlock, data: newData as any })}
+            theme={theme}
           />
         )}
         {selectedBlock.type === 'text' && (
           <TextInspector
             data={selectedBlock.data as any}
             onChange={(newData) => onUpdateBlock({ ...selectedBlock, data: newData as any })}
+            theme={theme}
           />
         )}
         {selectedBlock.type === 'divider' && (
@@ -180,6 +183,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
           <FaqInspector
             data={selectedBlock.data as any}
             onChange={(newData) => onUpdateBlock({ ...selectedBlock, data: newData as any })}
+            theme={theme}
           />
         )}
       </div>

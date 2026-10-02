@@ -139,7 +139,7 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({ templates, onSel
   };
 
   const handleSelectClick = () => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as any });
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
     onSelectTemplate(templates[currentIndex]);
@@ -165,12 +165,19 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({ templates, onSel
         <p className="text-xs sm:text-sm text-slate-400 mt-0.5 px-4 leading-relaxed font-normal">
           Deslize para os lados para navegar entre os estilos pré-definidos.
         </p>
+
+        {/* Layout Title ABOVE 3D Mockup */}
+        <div className="mt-2 sm:mt-2.5 flex items-center justify-center">
+          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight transition-all duration-300">
+            {currentTemplate.name}
+          </h2>
+        </div>
       </header>
 
       {/* 3D Cover Flow Carousel Stage */}
       <div
         ref={containerRef}
-        className="w-full flex-1 min-h-[300px] flex items-center justify-center relative z-10 touch-pan-y my-auto"
+        className="w-full flex-1 min-h-[300px] flex items-center justify-center relative z-10 touch-none my-auto"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -266,6 +273,7 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({ templates, onSel
 
             // CRITICAL: calc(-50% + translateX) guarantees the card is mathematically DEAD CENTER
             const transform = `translate3d(calc(-50% + ${translateX}px), -50%, ${translateZ}px) rotateY(${rotateY}deg) rotateX(${rotateX}deg) scale(${scale})`;
+            const isVisible = Math.abs(effectiveDiff) <= 2.2;
 
             return (
               <div
@@ -281,16 +289,18 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({ templates, onSel
                     : 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease',
                 }}
               >
-                <DeviceCardPreview
-                  template={tpl}
-                  isActive={isCenter && !isDragging}
-                  onClick={() => {
-                    if (Math.abs(dragOffset) < 10) {
-                      if (diff === -1 || isImmediateLeft) handlePrev();
-                      else if (diff === 1 || isImmediateRight) handleNext();
-                    }
-                  }}
-                />
+                {isVisible && (
+                  <DeviceCardPreview
+                    template={tpl}
+                    isActive={isCenter && !isDragging}
+                    onClick={() => {
+                      if (Math.abs(dragOffset) < 10) {
+                        if (diff === -1 || isImmediateLeft) handlePrev();
+                        else if (diff === 1 || isImmediateRight) handleNext();
+                      }
+                    }}
+                  />
+                )}
               </div>
             );
           })}
@@ -334,13 +344,8 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({ templates, onSel
 
       {/* Bottom Details, Dots & Primary Action Button (in flex flow, NEVER overlapping) */}
       <div className="w-full max-w-sm mx-auto flex flex-col items-center text-center px-4 z-20 flex-shrink-0 pb-1">
-        {/* Template Title */}
-        <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-tight">
-          {currentTemplate.name}
-        </h2>
-
         {/* Template Description */}
-        <p className="text-[11px] sm:text-xs text-slate-300 mt-1 line-clamp-2 px-1 font-normal leading-relaxed max-w-xs sm:max-w-sm">
+        <p className="text-xs sm:text-sm text-slate-300 line-clamp-2 px-1 font-normal leading-relaxed max-w-xs sm:max-w-sm">
           {currentTemplate.description}
         </p>
 
@@ -376,7 +381,7 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({ templates, onSel
         <button
           type="button"
           onClick={() => {
-            window.scrollTo({ top: 0, left: 0, behavior: 'instant' as any });
+            window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
             document.documentElement.scrollTop = 0;
             document.body.scrollTop = 0;
             const blankTemplate = templates.find((t) => t.id === 'comecar-do-zero') || templates[0];

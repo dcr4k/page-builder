@@ -117,18 +117,21 @@ export const MobileBlockInspectorSheet: React.FC<MobileBlockInspectorSheetProps>
         <ContactInspector
           data={block.data}
           onChange={(newData) => onUpdateBlock({ ...block, data: newData })}
+          theme={theme}
         />
       )}
       {block.type === 'media' && (
         <MediaInspector
           data={block.data}
           onChange={(newData) => onUpdateBlock({ ...block, data: newData })}
+          theme={theme}
         />
       )}
       {block.type === 'text' && (
         <TextInspector
           data={block.data}
           onChange={(newData) => onUpdateBlock({ ...block, data: newData })}
+          theme={theme}
         />
       )}
       {block.type === 'divider' && (
@@ -142,6 +145,7 @@ export const MobileBlockInspectorSheet: React.FC<MobileBlockInspectorSheetProps>
         <FaqInspector
           data={block.data}
           onChange={(newData) => onUpdateBlock({ ...block, data: newData })}
+          theme={theme}
         />
       )}
 

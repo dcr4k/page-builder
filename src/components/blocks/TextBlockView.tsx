@@ -29,18 +29,18 @@ export const TextBlockView: React.FC<TextBlockViewProps> = ({ data, theme }) => 
           <div className="flex-1 min-w-0">
             <p
               className="italic text-sm sm:text-base leading-relaxed font-serif"
-              style={{ color: theme.textColor }}
+              style={{ color: data.textColor || theme.textColor }}
             >
               "{data.content}"
             </p>
             {(data.quoteAuthor || data.title) && (
               <div className="mt-2.5 pt-2 border-t border-white/10 flex items-center justify-between">
                 <div>
-                  <h5 className="font-bold text-xs" style={{ color: theme.textColor }}>
+                  <h5 className="font-bold text-xs" style={{ color: data.titleColor || theme.textColor }}>
                     {data.quoteAuthor || data.title}
                   </h5>
                   {data.quoteRole && (
-                    <span className="text-[10px] opacity-70 block" style={{ color: theme.textSecondaryColor }}>
+                    <span className="text-[10px] opacity-70 block" style={{ color: data.quoteAuthorColor || theme.textSecondaryColor }}>
                       {data.quoteRole}
                     </span>
                   )}
@@ -72,14 +72,14 @@ export const TextBlockView: React.FC<TextBlockViewProps> = ({ data, theme }) => 
           {data.title && (
             <h4
               className="font-bold text-xs sm:text-sm mb-0.5"
-              style={{ color: theme.textColor }}
+              style={{ color: data.titleColor || theme.textColor }}
             >
               {data.title}
             </h4>
           )}
           <p
             className="text-xs leading-relaxed"
-            style={{ color: theme.textSecondaryColor }}
+            style={{ color: data.textColor || theme.textSecondaryColor }}
           >
             {data.content}
           </p>
@@ -108,7 +108,7 @@ export const TextBlockView: React.FC<TextBlockViewProps> = ({ data, theme }) => 
         {data.title && (
           <h4
             className="font-bold text-xs sm:text-sm mb-2"
-            style={{ color: theme.textColor }}
+            style={{ color: data.titleColor || theme.textColor }}
           >
             {data.title}
           </h4>
@@ -117,7 +117,7 @@ export const TextBlockView: React.FC<TextBlockViewProps> = ({ data, theme }) => 
           {items.map((item, idx) => (
             <div key={idx} className="flex items-center gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-              <span className="text-xs sm:text-sm font-medium" style={{ color: theme.textColor }}>
+              <span className="text-xs sm:text-sm font-medium" style={{ color: data.textColor || theme.textColor }}>
                 {item}
               </span>
             </div>
@@ -133,14 +133,14 @@ export const TextBlockView: React.FC<TextBlockViewProps> = ({ data, theme }) => 
       {data.title && (
         <h3
           className="font-bold text-base sm:text-lg mb-1.5"
-          style={{ color: theme.textColor }}
+          style={{ color: data.titleColor || theme.textColor }}
         >
           {data.title}
         </h3>
       )}
       <p
         className="text-xs sm:text-sm leading-relaxed whitespace-pre-line"
-        style={{ color: theme.textSecondaryColor }}
+        style={{ color: data.textColor || theme.textSecondaryColor }}
       >
         {data.content}
       </p>

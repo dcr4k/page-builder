@@ -54,15 +54,15 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-1.5">
           <img
             src={logoImg}
-            alt="BioCraft Studio"
+            alt="Digit4l Builder"
             className="w-7 h-7 rounded-full object-contain shadow-md border border-brand-500/40"
           />
           <div className="hidden sm:flex items-center gap-1.5">
             <span className="font-extrabold text-sm text-white tracking-tight">
-              BioCraft
+              Digit4l
             </span>
             <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-brand-500/15 text-brand-400 border border-brand-500/30 uppercase tracking-wider">
-              Studio
+              Builder
             </span>
           </div>
         </div>

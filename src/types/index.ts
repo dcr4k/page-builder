@@ -41,6 +41,7 @@ export interface PageTheme {
   buttonStyle: ButtonStyle;
   buttonShadow: ButtonShadow;
   
+  backgroundBrightness?: number;
   pageWidth: 'narrow' | 'medium' | 'wide';
 }
 
@@ -135,6 +136,9 @@ export interface ContactBlockData {
   layout?: 'full-form' | 'whatsapp-direct' | 'inline-newsletter';
   agentAvatar?: string;
   agentStatus?: string;
+  titleColor?: string;
+  descriptionColor?: string;
+  buttonTextColor?: string;
 }
 
 export interface MediaBlockData {
@@ -147,6 +151,7 @@ export interface MediaBlockData {
   layout?: 'single' | 'duo-gallery' | 'polaroid' | 'video';
   secondaryMediaUrl?: string;
   secondaryCaption?: string;
+  captionColor?: string;
 }
 
 export interface TextBlockData {
@@ -157,6 +162,9 @@ export interface TextBlockData {
   quoteAuthor?: string;
   quoteRole?: string;
   bulletItems?: string[];
+  titleColor?: string;
+  textColor?: string;
+  quoteAuthorColor?: string;
 }
 
 export interface DividerBlockData {
@@ -164,6 +172,7 @@ export interface DividerBlockData {
   spacing: 'sm' | 'md' | 'lg' | 'xl';
   color?: string;
   badgeText?: string;
+  textColor?: string;
 }
 
 export interface FaqItem {
@@ -178,6 +187,9 @@ export interface FaqBlockData {
   layout?: 'accordion' | 'cards' | 'support';
   supportButtonText?: string;
   supportButtonUrl?: string;
+  titleColor?: string;
+  questionColor?: string;
+  answerColor?: string;
 }
 
 export interface BaseBlock {

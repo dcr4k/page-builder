@@ -28,7 +28,7 @@ export const GlobalLoadingOverlay: React.FC<GlobalLoadingOverlayProps> = ({
           <div className="w-20 h-20 sm:w-24 sm:h-24 relative flex items-center justify-center animate-spin-horizontal">
             <img
               src={logoImg}
-              alt="BioCraft Logo"
+              alt="Digit4l Builder Logo"
               className="w-full h-full object-contain drop-shadow-[0_0_20px_rgba(0,229,153,0.65)]"
             />
           </div>

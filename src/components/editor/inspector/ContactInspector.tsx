@@ -1,11 +1,13 @@
 import React, { useRef } from 'react';
-import { ContactBlockData } from '../../../types';
-import { MessageSquare, Mail, Layers, Upload, User, CheckCircle2 } from 'lucide-react';
+import { ContactBlockData, PageTheme } from '../../../types';
+import { MessageSquare, Mail, Layers, Upload, User, CheckCircle2, Palette } from 'lucide-react';
 import { WhatsAppIcon } from '../../common/SocialIcons';
+import { TextColorSelector } from '../../common/TextColorSelector';
 
 interface ContactInspectorProps {
   data: ContactBlockData;
   onChange: (updated: ContactBlockData) => void;
+  theme?: PageTheme;
 }
 
 const PRESET_AGENT_AVATARS = [
@@ -22,7 +24,7 @@ const STATUS_SUGGESTIONS = [
   'Responde em minutos',
 ];
 
-export const ContactInspector: React.FC<ContactInspectorProps> = ({ data, onChange }) => {
+export const ContactInspector: React.FC<ContactInspectorProps> = ({ data, onChange, theme }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const layout = data.layout || (data.submitAction === 'whatsapp' && !data.showEmail && !data.showMessage ? 'whatsapp-direct' : 'full-form');
 
@@ -471,6 +473,41 @@ export const ContactInspector: React.FC<ContactInspectorProps> = ({ data, onChan
           </div>
         </div>
       )}
+
+      {/* 5. Cores dos Textos do Formulário */}
+      <div className="pt-2 border-t border-studio-border space-y-3">
+        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+          <Palette className="w-3.5 h-3.5 text-brand-400" />
+          <span>Cores das Fontes</span>
+        </label>
+
+        {/* Título do formulário (titular -> colorido permitido) */}
+        <TextColorSelector
+          label="Cor do Título"
+          value={data.titleColor}
+          defaultColor={theme?.textColor || '#ffffff'}
+          onChange={(color) => onChange({ ...data, titleColor: color })}
+          allowColorful={true}
+        />
+
+        {/* Descrição / subtítulo (3 opções: branco, cinza, preto) */}
+        <TextColorSelector
+          label="Cor da Descrição / Subtítulo"
+          value={data.descriptionColor}
+          defaultColor={theme?.textSecondaryColor || '#94a3b8'}
+          onChange={(color) => onChange({ ...data, descriptionColor: color })}
+          allowColorful={false}
+        />
+
+        {/* Botão de envio (3 opções: branco, cinza, preto) */}
+        <TextColorSelector
+          label="Cor do Texto do Botão"
+          value={data.buttonTextColor}
+          defaultColor="#ffffff"
+          onChange={(color) => onChange({ ...data, buttonTextColor: color })}
+          allowColorful={false}
+        />
+      </div>
     </div>
   );
 };

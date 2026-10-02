@@ -31,7 +31,10 @@ export const MediaBlockView: React.FC<MediaBlockViewProps> = ({ data, theme }) =
             />
           </div>
           {data.caption && (
-            <p className="text-center font-serif italic text-xs sm:text-sm text-slate-700 tracking-wide">
+            <p
+              className="text-center font-serif italic text-xs sm:text-sm tracking-wide"
+              style={{ color: data.captionColor || '#334155' }}
+            >
               {data.caption}
             </p>
           )}
@@ -49,7 +52,7 @@ export const MediaBlockView: React.FC<MediaBlockViewProps> = ({ data, theme }) =
     return (
       <div className="w-full grid grid-cols-2 gap-2">
         <div
-          className="rounded-2xl overflow-hidden shadow-md border"
+          className="min-w-0 rounded-2xl overflow-hidden shadow-md border"
           style={{
             backgroundColor: theme.cardBackground,
             borderColor: theme.cardBorderColor,
@@ -65,7 +68,7 @@ export const MediaBlockView: React.FC<MediaBlockViewProps> = ({ data, theme }) =
           {data.caption && (
             <div
               className="p-2 text-center text-[10px] font-medium truncate"
-              style={{ color: theme.textSecondaryColor }}
+              style={{ color: data.captionColor || theme.textSecondaryColor }}
             >
               {data.caption}
             </div>
@@ -73,7 +76,7 @@ export const MediaBlockView: React.FC<MediaBlockViewProps> = ({ data, theme }) =
         </div>
 
         <div
-          className="rounded-2xl overflow-hidden shadow-md border"
+          className="min-w-0 rounded-2xl overflow-hidden shadow-md border"
           style={{
             backgroundColor: theme.cardBackground,
             borderColor: theme.cardBorderColor,
@@ -89,7 +92,7 @@ export const MediaBlockView: React.FC<MediaBlockViewProps> = ({ data, theme }) =
           {data.secondaryCaption && (
             <div
               className="p-2 text-center text-[10px] font-medium truncate"
-              style={{ color: theme.textSecondaryColor }}
+              style={{ color: data.captionColor || theme.textSecondaryColor }}
             >
               {data.secondaryCaption}
             </div>
@@ -131,7 +134,7 @@ export const MediaBlockView: React.FC<MediaBlockViewProps> = ({ data, theme }) =
           className="p-3 text-center text-xs font-medium border-t"
           style={{
             borderColor: theme.cardBorderColor,
-            color: theme.textSecondaryColor,
+            color: data.captionColor || theme.textSecondaryColor,
           }}
         >
           {data.caption}

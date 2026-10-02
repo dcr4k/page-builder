@@ -56,6 +56,7 @@ export const SortableBlockWrapper: React.FC<SortableBlockWrapperProps> = ({
     zIndex: isDragging ? 50 : isTargetGuide ? 30 : undefined,
     opacity: isDragging ? 0.8 : undefined,
     touchAction: isDragging ? 'none' : 'pan-y',
+    WebkitTouchCallout: 'none',
   };
 
   const getBlockName = (type: Block['type']) => {

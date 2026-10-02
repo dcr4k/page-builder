@@ -29,7 +29,7 @@ export const DividerBlockView: React.FC<DividerBlockViewProps> = ({ data, theme 
           style={{
             backgroundColor: theme.cardBackground,
             borderColor: theme.cardBorderColor,
-            color: theme.primaryColor,
+            color: data.textColor || theme.primaryColor,
           }}
         >
           {data.badgeText || '✦ DESTAQUES ✦'}

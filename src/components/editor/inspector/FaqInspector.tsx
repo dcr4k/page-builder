@@ -1,13 +1,15 @@
 import React from 'react';
-import { Plus, Trash2, Layers, MessageCircle, HelpCircle, ChevronDown } from 'lucide-react';
-import { FaqBlockData, FaqItem } from '../../../types';
+import { Plus, Trash2, Layers, MessageCircle, HelpCircle, ChevronDown, Palette } from 'lucide-react';
+import { FaqBlockData, FaqItem, PageTheme } from '../../../types';
+import { TextColorSelector } from '../../common/TextColorSelector';
 
 interface FaqInspectorProps {
   data: FaqBlockData;
   onChange: (updated: FaqBlockData) => void;
+  theme?: PageTheme;
 }
 
-export const FaqInspector: React.FC<FaqInspectorProps> = ({ data, onChange }) => {
+export const FaqInspector: React.FC<FaqInspectorProps> = ({ data, onChange, theme }) => {
   const items = data.items || [];
   const currentLayout = data.layout || 'accordion';
 
@@ -187,6 +189,41 @@ export const FaqInspector: React.FC<FaqInspectorProps> = ({ data, onChange }) =>
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Font Colors Section */}
+      <div className="pt-3 border-t border-studio-border space-y-3">
+        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+          <Palette className="w-3.5 h-3.5 text-brand-400" />
+          <span>Cores das Fontes</span>
+        </label>
+
+        {/* Section Title Color */}
+        <TextColorSelector
+          label="Cor do Título da Seção"
+          value={data.titleColor}
+          defaultColor={theme?.textColor || '#ffffff'}
+          onChange={(color) => onChange({ ...data, titleColor: color })}
+          allowColorful={true}
+        />
+
+        {/* Question Title Color */}
+        <TextColorSelector
+          label="Cor das Perguntas"
+          value={data.questionColor}
+          defaultColor={theme?.textColor || '#ffffff'}
+          onChange={(color) => onChange({ ...data, questionColor: color })}
+          allowColorful={true}
+        />
+
+        {/* Answer Text Color (restricted to white, gray, black) */}
+        <TextColorSelector
+          label="Cor das Respostas"
+          value={data.answerColor}
+          defaultColor={theme?.textSecondaryColor || '#94a3b8'}
+          onChange={(color) => onChange({ ...data, answerColor: color })}
+          allowColorful={false}
+        />
       </div>
     </div>
   );

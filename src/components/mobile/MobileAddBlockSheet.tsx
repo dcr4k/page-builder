@@ -722,10 +722,28 @@ const CATEGORIES: BlockCategory[] = [
 
 export const MobileAddBlockSheet: React.FC<MobileAddBlockSheetProps> = ({ onAddBlock }) => {
   const [search, setSearch] = useState('');
-  const [expandedCategory, setExpandedCategory] = useState<BlockType | null>('product');
+  const [expandedCategories, setExpandedCategories] = useState<Set<BlockType>>(
+    new Set<BlockType>(['product'])
+  );
 
   const toggleCategory = (type: BlockType) => {
-    setExpandedCategory((prev) => (prev === type ? null : type));
+    setExpandedCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(type)) {
+        next.delete(type);
+      } else {
+        next.add(type);
+      }
+      return next;
+    });
+  };
+
+  const expandAll = () => {
+    setExpandedCategories(new Set<BlockType>(CATEGORIES.map((c) => c.type)));
+  };
+
+  const collapseAll = () => {
+    setExpandedCategories(new Set<BlockType>());
   };
 
   // Filter categories and options based on search query
@@ -1016,19 +1034,43 @@ export const MobileAddBlockSheet: React.FC<MobileAddBlockSheetProps> = ({ onAddB
         />
       </div>
 
+      {/* Categories Toolbar: Counter & Quick Controls */}
+      <div className="flex items-center justify-between gap-2 px-1 pt-0.5 select-none">
+        <span className="text-[11px] font-bold text-slate-400">
+          Categorias ({filteredCategories.length})
+        </span>
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={expandAll}
+            className="text-[11px] font-semibold text-slate-400 hover:text-brand-400 px-2 py-0.5 rounded-lg hover:bg-studio-card transition-colors active:scale-95"
+          >
+            Expandir todos
+          </button>
+          <span className="text-zinc-700">•</span>
+          <button
+            type="button"
+            onClick={collapseAll}
+            className="text-[11px] font-semibold text-slate-400 hover:text-brand-400 px-2 py-0.5 rounded-lg hover:bg-studio-card transition-colors active:scale-95"
+          >
+            Recolher todos
+          </button>
+        </div>
+      </div>
+
       {/* Categories Accordion List */}
       <div className="flex flex-col gap-2.5 pt-1">
         {filteredCategories.map((category) => {
           const IconComp = category.icon;
-          const isExpanded = query ? true : expandedCategory === category.type;
+          const isExpanded = query ? true : expandedCategories.has(category.type);
 
           return (
             <div
               key={category.type}
-              className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+              className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
                 isExpanded
                   ? 'bg-studio-panel border-brand-500/70 shadow-lg shadow-black/60 ring-1 ring-brand-500/30'
-                  : 'bg-studio-card border-studio-border hover:border-brand-500/30 hover:bg-studio-panel'
+                  : 'bg-studio-card/80 border-studio-border hover:border-brand-500/30 hover:bg-studio-panel'
               }`}
             >
               {/* Category Header Row (Click to toggle collapse) */}
@@ -1036,12 +1078,13 @@ export const MobileAddBlockSheet: React.FC<MobileAddBlockSheetProps> = ({ onAddB
                 type="button"
                 onClick={() => toggleCategory(category.type)}
                 className="w-full p-3 flex items-center justify-between gap-3 text-left transition-colors cursor-pointer select-none group"
+                aria-expanded={isExpanded}
               >
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
                       isExpanded
-                        ? 'bg-brand-500 text-black font-bold shadow-md shadow-brand-500/20'
+                        ? 'bg-brand-500 text-black font-bold shadow-md shadow-brand-500/25 scale-105'
                         : 'bg-brand-500/10 text-brand-400 group-hover:bg-brand-500 group-hover:text-black'
                     }`}
                   >
@@ -1070,77 +1113,79 @@ export const MobileAddBlockSheet: React.FC<MobileAddBlockSheetProps> = ({ onAddB
                     {category.subOptions.length} modelos
                   </span>
                   <div
-                    className={`w-7 h-7 rounded-full flex items-center justify-center transition-transform duration-200 ${
+                    className={`w-7 h-7 rounded-full flex items-center justify-center transition-transform duration-300 ease-out ${
                       isExpanded
-                        ? 'rotate-180 bg-brand-500/20 text-brand-400'
-                        : 'bg-studio-card text-slate-400 group-hover:text-white border border-studio-border'
+                        ? 'rotate-180 bg-brand-500/20 text-brand-400 shadow-[0_0_10px_rgba(0,229,153,0.3)]'
+                        : 'rotate-0 bg-studio-card text-slate-400 group-hover:text-white border border-studio-border'
                     }`}
                   >
-                    <ChevronDown className="w-4 h-4" />
+                    <ChevronDown className="w-4 h-4 transition-transform duration-300" />
                   </div>
                 </div>
               </button>
 
-              {/* Collapsible Sub-options Area */}
-              {isExpanded && (
-                <div className="border-t border-studio-border bg-studio-black/80 p-2.5 pt-3 space-y-2 animate-fade-in">
-                  <div className="flex items-center justify-between px-1 mb-1">
-                    <span className="text-[11px] font-bold text-brand-400 uppercase tracking-wider flex items-center gap-1.5">
-                      <Sparkles className="w-3 h-3 text-brand-400" />
-                      <span>Modelos disponíveis em {category.title}</span>
-                    </span>
-                    <span className="text-[10px] text-slate-400 font-medium">
-                      Toque no modelo para adicionar
-                    </span>
-                  </div>
+              {/* Collapsible Sub-options Area with Smooth Grid Transition */}
+              <div className={`collapse-transition ${isExpanded ? 'is-expanded' : ''}`}>
+                <div className="collapse-content">
+                  <div className="border-t border-studio-border/70 bg-studio-black/80 p-2.5 pt-3 space-y-2">
+                    <div className="flex items-center justify-between px-1 mb-1">
+                      <span className="text-[11px] font-bold text-brand-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <Sparkles className="w-3 h-3 text-brand-400" />
+                        <span>Modelos disponíveis em {category.title}</span>
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-medium">
+                        Toque no modelo para adicionar
+                      </span>
+                    </div>
 
-                  <div className="grid grid-cols-1 gap-2">
-                    {category.subOptions.map((subOpt) => {
-                      return (
-                        <div
-                          key={subOpt.id}
-                          onClick={() => onAddBlock(category.type, subOpt.customData)}
-                          className="p-3 rounded-xl border border-studio-border bg-studio-card/80 hover:bg-studio-panel hover:border-brand-500/50 flex items-center justify-between gap-3 transition-all cursor-pointer group active:scale-[0.98] shadow-sm"
-                        >
-                          {/* Visual Diagram / Mini representation */}
-                          <div className="flex items-center gap-3 min-w-0 flex-1">
-                            {renderVisualBadge(subOpt.visualType)}
-
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-1.5">
-                                <h5 className="text-xs font-bold text-white group-hover:text-brand-300 truncate">
-                                  {subOpt.title}
-                                </h5>
-                                {subOpt.badge && (
-                                  <span className="text-[9px] px-1.5 py-0.2 rounded bg-brand-500/15 text-brand-400 font-bold border border-brand-500/30 flex-shrink-0">
-                                    {subOpt.badge}
-                                  </span>
-                                )}
-                              </div>
-                              <p className="text-[11px] text-slate-400 line-clamp-1 mt-0.5">
-                                {subOpt.description}
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* Quick Add Button */}
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onAddBlock(category.type, subOpt.customData);
-                            }}
-                            className="px-2.5 py-1.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-black text-[11px] font-black flex items-center gap-1 shadow-md shadow-brand-500/20 group-hover:scale-105 active:scale-95 transition-all flex-shrink-0"
+                    <div className="grid grid-cols-1 gap-2">
+                      {category.subOptions.map((subOpt) => {
+                        return (
+                          <div
+                            key={subOpt.id}
+                            onClick={() => onAddBlock(category.type, subOpt.customData)}
+                            className="p-3 rounded-xl border border-studio-border bg-studio-card/80 hover:bg-studio-panel hover:border-brand-500/50 flex items-center justify-between gap-3 transition-all cursor-pointer group active:scale-[0.98] shadow-sm"
                           >
-                            <Plus className="w-3.5 h-3.5 stroke-[3]" />
-                            <span>Adicionar</span>
-                          </button>
-                        </div>
-                      );
-                    })}
+                            {/* Visual Diagram / Mini representation */}
+                            <div className="flex items-center gap-3 min-w-0 flex-1">
+                              {renderVisualBadge(subOpt.visualType)}
+
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-1.5">
+                                  <h5 className="text-xs font-bold text-white group-hover:text-brand-300 truncate">
+                                    {subOpt.title}
+                                  </h5>
+                                  {subOpt.badge && (
+                                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-brand-500/15 text-brand-400 font-bold border border-brand-500/30 flex-shrink-0">
+                                      {subOpt.badge}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-[11px] text-slate-400 line-clamp-1 mt-0.5">
+                                  {subOpt.description}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Quick Add Button */}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onAddBlock(category.type, subOpt.customData);
+                              }}
+                              className="px-2.5 py-1.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-black text-[11px] font-black flex items-center gap-1 shadow-md shadow-brand-500/20 group-hover:scale-105 active:scale-95 transition-all flex-shrink-0"
+                            >
+                              <Plus className="w-3.5 h-3.5 stroke-[3]" />
+                              <span>Adicionar</span>
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
           );
         })}

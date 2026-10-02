@@ -1,6 +1,7 @@
 import React from 'react';
 import { DividerBlockData, PageTheme } from '../../../types';
 import { Minus, Sparkles, Layers, Eye } from 'lucide-react';
+import { TextColorSelector } from '../../common/TextColorSelector';
 
 interface DividerInspectorProps {
   data: DividerBlockData;
@@ -153,7 +154,7 @@ export const DividerInspector: React.FC<DividerInspectorProps> = ({ data, onChan
                 style={{
                   backgroundColor: cardBackground,
                   borderColor: cardBorderColor,
-                  color: primaryColor,
+                  color: data.textColor || primaryColor,
                 }}
               >
                 {data.badgeText || '✦ DESTAQUES ✦'}
@@ -216,6 +217,15 @@ export const DividerInspector: React.FC<DividerInspectorProps> = ({ data, onChan
               ))}
             </div>
           </div>
+
+          {/* Cor da Fonte do Selo */}
+          <TextColorSelector
+            label="Cor da Fonte do Selo"
+            value={data.textColor}
+            defaultColor={primaryColor}
+            onChange={(color) => onChange({ ...data, textColor: color })}
+            allowColorful={true}
+          />
         </div>
       )}
 

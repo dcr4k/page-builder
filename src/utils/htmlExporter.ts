@@ -391,7 +391,7 @@ export const generateCleanHtml = (theme: PageTheme, blocks: Block[]): string => 
             <div style="aspect-ratio: 1/1; width: 100%; border-radius: 8px; overflow: hidden; background: #eee;">
               <img src="${d.mediaUrl}" alt="${d.caption || 'Foto Polaroid'}" style="width: 100%; height: 100%; object-fit: cover;" />
             </div>
-            ${d.caption ? `<p style="margin: 10px 0 0 0; font-family: serif; font-style: italic; font-size: 13px; color: #334155;">${d.caption}</p>` : ''}
+            ${d.caption ? `<p style="margin: 10px 0 0 0; font-family: serif; font-style: italic; font-size: 13px; color: ${d.captionColor || '#334155'};">${d.caption}</p>` : ''}
           </div>`;
         }
 
@@ -402,11 +402,11 @@ export const generateCleanHtml = (theme: PageTheme, blocks: Block[]): string => 
           <div class="block-item media-duo" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px;">
             <div style="border-radius: 14px; overflow: hidden; background: ${theme.cardBackground}; border: 1px solid ${theme.cardBorderColor};">
               <div style="aspect-ratio: 1/1; overflow: hidden;"><img src="${d.mediaUrl}" alt="1" style="width: 100%; height: 100%; object-fit: cover;" /></div>
-              ${d.caption ? `<div style="padding: 6px; font-size: 11px; text-align: center; color: ${theme.textSecondaryColor};">${d.caption}</div>` : ''}
+              ${d.caption ? `<div style="padding: 6px; font-size: 11px; text-align: center; color: ${d.captionColor || theme.textSecondaryColor};">${d.caption}</div>` : ''}
             </div>
             <div style="border-radius: 14px; overflow: hidden; background: ${theme.cardBackground}; border: 1px solid ${theme.cardBorderColor};">
               <div style="aspect-ratio: 1/1; overflow: hidden;"><img src="${url2}" alt="2" style="width: 100%; height: 100%; object-fit: cover;" /></div>
-              ${d.secondaryCaption ? `<div style="padding: 6px; font-size: 11px; text-align: center; color: ${theme.textSecondaryColor};">${d.secondaryCaption}</div>` : ''}
+              ${d.secondaryCaption ? `<div style="padding: 6px; font-size: 11px; text-align: center; color: ${d.captionColor || theme.textSecondaryColor};">${d.secondaryCaption}</div>` : ''}
             </div>
           </div>`;
         }
@@ -420,7 +420,7 @@ export const generateCleanHtml = (theme: PageTheme, blocks: Block[]): string => 
           </div>` : `
           <img src="${d.mediaUrl}" alt="${d.caption || 'Imagem em destaque'}" style="width: 100%; height: auto; display: block; object-fit: cover;" />
           `}
-          ${d.caption ? `<p style="margin: 0; padding: 10px 14px; font-size: 12px; color: ${theme.textSecondaryColor}; text-align: center; border-top: 1px solid ${theme.cardBorderColor};">${d.caption}</p>` : ''}
+          ${d.caption ? `<p style="margin: 0; padding: 10px 14px; font-size: 12px; color: ${d.captionColor || theme.textSecondaryColor}; text-align: center; border-top: 1px solid ${theme.cardBorderColor};">${d.caption}</p>` : ''}
         </div>`;
       }
 
@@ -436,11 +436,11 @@ export const generateCleanHtml = (theme: PageTheme, blocks: Block[]): string => 
               <img src="${avatar}" alt="Atendente" style="width: 48px; height: 48px; border-radius: 50%; border: 2px solid #10b981; object-fit: cover;" />
               <div>
                 <span style="font-size: 10px; font-weight: 700; color: #10b981; text-transform: uppercase;">${d.agentStatus || 'Online agora no WhatsApp'}</span>
-                <h4 style="margin: 2px 0 0 0; font-size: 15px; font-weight: 700; color: ${theme.textColor};">${d.title || 'Fale Conosco Diretamente'}</h4>
-                ${d.description ? `<p style="margin: 2px 0 0 0; font-size: 11px; opacity: 0.8; color: ${theme.textSecondaryColor};">${d.description}</p>` : ''}
+                <h4 style="margin: 2px 0 0 0; font-size: 15px; font-weight: 700; color: ${d.titleColor || theme.textColor};">${d.title || 'Fale Conosco Diretamente'}</h4>
+                ${d.description ? `<p style="margin: 2px 0 0 0; font-size: 11px; opacity: 0.8; color: ${d.descriptionColor || theme.textSecondaryColor};">${d.description}</p>` : ''}
               </div>
             </div>
-            <a href="https://wa.me/${cleanDest}" target="_blank" rel="noopener noreferrer" style="${btnBaseStyle}; background-color: #059669 !important; color: #ffffff !important; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <a href="https://wa.me/${cleanDest}" target="_blank" rel="noopener noreferrer" style="${btnBaseStyle}; background-color: #059669 !important; color: ${d.buttonTextColor || '#ffffff'} !important; display: flex; align-items: center; justify-content: center; gap: 8px;">
               ${d.buttonText || 'Iniciar Conversa no WhatsApp'} →
             </a>
           </div>`;
@@ -450,11 +450,11 @@ export const generateCleanHtml = (theme: PageTheme, blocks: Block[]): string => 
           return `
           <!-- Contact Newsletter Block -->
           <div class="block-item contact-newsletter" style="background: ${theme.cardBackground}; border: 1px solid ${theme.cardBorderColor}; border-radius: 16px; padding: 18px; margin-bottom: 20px; text-align: center;">
-            <h3 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 700; color: ${theme.textColor};">${d.title || 'Receba Novidades Exclusivas'}</h3>
-            ${d.description ? `<p style="margin: 0 0 14px 0; font-size: 12px; color: ${theme.textSecondaryColor};">${d.description}</p>` : ''}
+            <h3 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 700; color: ${d.titleColor || theme.textColor};">${d.title || 'Receba Novidades Exclusivas'}</h3>
+            ${d.description ? `<p style="margin: 0 0 14px 0; font-size: 12px; color: ${d.descriptionColor || theme.textSecondaryColor};">${d.description}</p>` : ''}
             <form onsubmit="handleContactSubmit(event, '${d.submitAction}', '${d.destination}')" style="display: flex; gap: 8px;">
               <input type="email" name="email" placeholder="Digite seu e-mail..." required style="flex: 1; padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.2); border: 1px solid ${theme.cardBorderColor}; color: ${theme.textColor}; font-size: 13px;" />
-              <button type="submit" style="${btnBaseStyle}; padding: 10px 16px; font-size: 13px;">${d.buttonText || 'Cadastrar'}</button>
+              <button type="submit" style="${btnBaseStyle}; padding: 10px 16px; font-size: 13px; color: ${d.buttonTextColor || theme.primaryTextColor} !important;">${d.buttonText || 'Cadastrar'}</button>
             </form>
           </div>`;
         }
@@ -462,14 +462,14 @@ export const generateCleanHtml = (theme: PageTheme, blocks: Block[]): string => 
         return `
         <!-- Contact Block -->
         <div class="block-item contact-card" style="background: ${theme.cardBackground}; border: 1px solid ${theme.cardBorderColor}; border-radius: 16px; padding: 20px; margin-bottom: 20px;">
-          <h3 style="margin: 0 0 6px 0; font-size: 17px; font-weight: 700; color: ${theme.textColor}; text-align: center;">${d.title}</h3>
-          ${d.description ? `<p style="margin: 0 0 16px 0; font-size: 13px; color: ${theme.textSecondaryColor}; text-align: center;">${d.description}</p>` : ''}
+          <h3 style="margin: 0 0 6px 0; font-size: 17px; font-weight: 700; color: ${d.titleColor || theme.textColor}; text-align: center;">${d.title}</h3>
+          ${d.description ? `<p style="margin: 0 0 16px 0; font-size: 13px; color: ${d.descriptionColor || theme.textSecondaryColor}; text-align: center;">${d.description}</p>` : ''}
           <form onsubmit="handleContactSubmit(event, '${d.submitAction}', '${d.destination}')" style="display: flex; flex-direction: column; gap: 10px;">
             ${d.showName ? `<input type="text" name="name" placeholder="Seu nome completo" required style="width: 100%; padding: 12px; border-radius: 10px; background: rgba(0,0,0,0.25); border: 1px solid ${theme.cardBorderColor}; color: ${theme.textColor}; font-size: 14px; box-sizing: border-box;" />` : ''}
             ${d.showEmail ? `<input type="email" name="email" placeholder="Seu melhor e-mail" required style="width: 100%; padding: 12px; border-radius: 10px; background: rgba(0,0,0,0.25); border: 1px solid ${theme.cardBorderColor}; color: ${theme.textColor}; font-size: 14px; box-sizing: border-box;" />` : ''}
             ${d.showPhone ? `<input type="tel" name="phone" placeholder="Seu WhatsApp ou telefone" style="width: 100%; padding: 12px; border-radius: 10px; background: rgba(0,0,0,0.25); border: 1px solid ${theme.cardBorderColor}; color: ${theme.textColor}; font-size: 14px; box-sizing: border-box;" />` : ''}
             ${d.showMessage ? `<textarea name="message" rows="3" placeholder="Sua mensagem..." required style="width: 100%; padding: 12px; border-radius: 10px; background: rgba(0,0,0,0.25); border: 1px solid ${theme.cardBorderColor}; color: ${theme.textColor}; font-size: 14px; box-sizing: border-box; resize: vertical;"></textarea>` : ''}
-            <button type="submit" style="${btnBaseStyle} margin-top: 4px;">${d.buttonText || 'Enviar Mensagem'}</button>
+            <button type="submit" style="${btnBaseStyle} margin-top: 4px; color: ${d.buttonTextColor || theme.primaryTextColor} !important;">${d.buttonText || 'Enviar Mensagem'}</button>
           </form>
         </div>`;
       }
@@ -481,8 +481,8 @@ export const generateCleanHtml = (theme: PageTheme, blocks: Block[]): string => 
           <!-- Quote Card Block -->
           <div class="block-item text-quote" style="background: ${theme.cardBackground}; border: 1px solid ${theme.cardBorderColor}; border-radius: 16px; padding: 18px; margin-bottom: 18px;">
             <div style="font-size: 24px; color: ${theme.primaryColor}; opacity: 0.6; line-height: 1;">“</div>
-            <p style="margin: 4px 0 10px 0; font-family: serif; font-style: italic; font-size: 15px; line-height: 1.5; color: ${theme.textColor};">"${d.content}"</p>
-            ${(d.quoteAuthor || d.title) ? `<div style="font-size: 12px; font-weight: 700; color: ${theme.textColor}; border-top: 1px solid ${theme.cardBorderColor}; padding-top: 8px;">— ${d.quoteAuthor || d.title} <span style="opacity: 0.7; font-weight: 400;">${d.quoteRole ? `• ${d.quoteRole}` : ''}</span></div>` : ''}
+            <p style="margin: 4px 0 10px 0; font-family: serif; font-style: italic; font-size: 15px; line-height: 1.5; color: ${d.textColor || theme.textColor};">"${d.content}"</p>
+            ${(d.quoteAuthor || d.title) ? `<div style="font-size: 12px; font-weight: 700; color: ${d.titleColor || theme.textColor}; border-top: 1px solid ${theme.cardBorderColor}; padding-top: 8px;">— ${d.quoteAuthor || d.title} <span style="color: ${d.quoteAuthorColor || theme.textSecondaryColor}; font-weight: 400;">${d.quoteRole ? `• ${d.quoteRole}` : ''}</span></div>` : ''}
           </div>`;
         }
 
@@ -490,8 +490,8 @@ export const generateCleanHtml = (theme: PageTheme, blocks: Block[]): string => 
           return `
           <!-- Callout Alert Block -->
           <div class="block-item text-callout" style="background: ${theme.primaryColor}15; border: 1px solid ${theme.primaryColor}40; border-left: 4px solid ${theme.primaryColor}; border-radius: 14px; padding: 14px; margin-bottom: 18px;">
-            ${d.title ? `<h4 style="margin: 0 0 4px 0; font-size: 14px; font-weight: 700; color: ${theme.textColor};">${d.title}</h4>` : ''}
-            <div style="font-size: 13px; line-height: 1.5; color: ${theme.textSecondaryColor};">${d.content}</div>
+            ${d.title ? `<h4 style="margin: 0 0 4px 0; font-size: 14px; font-weight: 700; color: ${d.titleColor || theme.textColor};">${d.title}</h4>` : ''}
+            <div style="font-size: 13px; line-height: 1.5; color: ${d.textColor || theme.textSecondaryColor};">${d.content}</div>
           </div>`;
         }
 
@@ -500,9 +500,9 @@ export const generateCleanHtml = (theme: PageTheme, blocks: Block[]): string => 
           return `
           <!-- Checklist Block -->
           <div class="block-item text-checklist" style="background: ${theme.cardBackground}; border: 1px solid ${theme.cardBorderColor}; border-radius: 16px; padding: 16px; margin-bottom: 18px;">
-            ${d.title ? `<h4 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 700; color: ${theme.textColor};">${d.title}</h4>` : ''}
+            ${d.title ? `<h4 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 700; color: ${d.titleColor || theme.textColor};">${d.title}</h4>` : ''}
             <div style="display: flex; flex-direction: column; gap: 8px;">
-              ${items.map((it: string) => `<div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: ${theme.textColor};"><span style="color: #10b981; font-weight: 700;">✓</span><span>${it}</span></div>`).join('')}
+              ${items.map((it: string) => `<div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: ${d.textColor || theme.textColor};"><span style="color: #10b981; font-weight: 700;">✓</span><span>${it}</span></div>`).join('')}
             </div>
           </div>`;
         }
@@ -510,8 +510,8 @@ export const generateCleanHtml = (theme: PageTheme, blocks: Block[]): string => 
         return `
         <!-- Text Block -->
         <div class="block-item text-block" style="text-align: ${d.align}; margin-bottom: 18px; padding: 4px 6px;">
-          ${d.title ? `<h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 700; color: ${theme.textColor};">${d.title}</h3>` : ''}
-          <div style="font-size: 14px; line-height: 1.6; color: ${theme.textSecondaryColor};">${d.content}</div>
+          ${d.title ? `<h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 700; color: ${d.titleColor || theme.textColor};">${d.title}</h3>` : ''}
+          <div style="font-size: 14px; line-height: 1.6; color: ${d.textColor || theme.textSecondaryColor};">${d.content}</div>
         </div>`;
       }
 
@@ -527,7 +527,7 @@ export const generateCleanHtml = (theme: PageTheme, blocks: Block[]): string => 
           <!-- Divider Badge Block -->
           <div style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: ${h} 0;">
             <div style="flex: 1; height: 1px; background: ${theme.cardBorderColor};"></div>
-            <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; padding: 2px 10px; border-radius: 9999px; background: ${theme.cardBackground}; border: 1px solid ${theme.cardBorderColor}; color: ${theme.primaryColor};">${d.badgeText || '✦ SEÇÃO ✦'}</span>
+            <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; padding: 2px 10px; border-radius: 9999px; background: ${theme.cardBackground}; border: 1px solid ${theme.cardBorderColor}; color: ${d.textColor || theme.primaryColor};">${d.badgeText || '✦ SEÇÃO ✦'}</span>
             <div style="flex: 1; height: 1px; background: ${theme.cardBorderColor};"></div>
           </div>`;
         }
@@ -559,25 +559,25 @@ export const generateCleanHtml = (theme: PageTheme, blocks: Block[]): string => 
         if (d.layout === 'cards') {
           const cardsHtml = (d.items || []).map((item) => `
             <div style="background: ${theme.cardBackground}; border: 1px solid ${theme.cardBorderColor}; border-radius: 14px; padding: 14px; margin-bottom: 10px;">
-              <h4 style="margin: 0 0 6px 0; font-size: 13px; font-weight: 700; color: ${theme.textColor};">Q: ${item.question}</h4>
-              <p style="margin: 0; font-size: 12px; line-height: 1.5; color: ${theme.textSecondaryColor};">${item.answer}</p>
+              <h4 style="margin: 0 0 6px 0; font-size: 13px; font-weight: 700; color: ${d.questionColor || theme.textColor};">Q: ${item.question}</h4>
+              <p style="margin: 0; font-size: 12px; line-height: 1.5; color: ${d.answerColor || theme.textSecondaryColor};">${item.answer}</p>
             </div>
           `).join('\n');
           return `
           <!-- FAQ Cards Block -->
           <div class="block-item faq-cards" style="margin-bottom: 20px;">
-            ${d.title ? `<h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 700; color: ${theme.textColor}; text-align: center;">${d.title}</h3>` : ''}
+            ${d.title ? `<h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 700; color: ${d.titleColor || theme.textColor}; text-align: center;">${d.title}</h3>` : ''}
             ${cardsHtml}
           </div>`;
         }
 
         const faqItems = (d.items || []).map((item) => `
           <details style="background: ${theme.cardBackground}; border: 1px solid ${theme.cardBorderColor}; border-radius: 12px; margin-bottom: 8px; overflow: hidden; padding: 12px 16px;">
-            <summary style="font-weight: 600; font-size: 14px; color: ${theme.textColor}; cursor: pointer; outline: none; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+            <summary style="font-weight: 600; font-size: 14px; color: ${d.questionColor || theme.textColor}; cursor: pointer; outline: none; list-style: none; display: flex; justify-content: space-between; align-items: center;">
               <span>${item.question}</span>
               <span style="opacity: 0.6; font-size: 16px;">+</span>
             </summary>
-            <div style="margin-top: 10px; font-size: 13px; line-height: 1.5; color: ${theme.textSecondaryColor}; border-top: 1px solid ${theme.cardBorderColor}; padding-top: 10px;">
+            <div style="margin-top: 10px; font-size: 13px; line-height: 1.5; color: ${d.answerColor || theme.textSecondaryColor}; border-top: 1px solid ${theme.cardBorderColor}; padding-top: 10px;">
               ${item.answer}
             </div>
           </details>
@@ -598,7 +598,7 @@ export const generateCleanHtml = (theme: PageTheme, blocks: Block[]): string => 
         return `
         <!-- FAQ Block -->
         <div class="block-item faq-block" style="margin-bottom: 20px;">
-          ${d.title ? `<h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 700; color: ${theme.textColor}; text-align: center;">${d.title}</h3>` : ''}
+          ${d.title ? `<h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 700; color: ${d.titleColor || theme.textColor}; text-align: center;">${d.title}</h3>` : ''}
           ${faqItems}
           ${supportHtml}
         </div>`;
@@ -713,7 +713,7 @@ export const generateCleanHtml = (theme: PageTheme, blocks: Block[]): string => 
     ${blocksHtml}
   </main>
   <footer>
-    <p>Criado com <strong>BioCraft Studio</strong></p>
+    <p>Criado com <strong>Digit4l Builder</strong></p>
   </footer>
   <script>
     function handleContactSubmit(event, action, destination) {

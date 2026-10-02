@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
-import { Palette, Type, Square, Upload, Check, ChevronRight, Sparkles } from 'lucide-react';
+import { Palette, Type, Square, Upload, Check, ChevronRight, Sparkles, SunMedium } from 'lucide-react';
 import { PageTheme } from '../../../types';
-import { PRESET_SOLID_COLORS, getAutoContrastTheme, isLightColor, ColorPreset } from '../../../utils/contrast';
+import { PRESET_SOLID_COLORS, getAutoContrastTheme, isLightColor, ColorPreset, adjustColorBrightness } from '../../../utils/contrast';
 
 interface GlobalStyleInspectorProps {
   theme: PageTheme;
@@ -58,26 +58,65 @@ export const GlobalStyleInspector: React.FC<GlobalStyleInspectorProps> = ({ them
     }
   };
 
+  const currentBrightness = theme.backgroundBrightness || 0;
+
   const handleSelectColorPreset = (preset: ColorPreset) => {
+    const b = theme.backgroundBrightness || 0;
     if (isGradientMode) {
       const currentDir = theme.gradient?.direction || 'to-b';
+      const from = b !== 0 ? adjustColorBrightness(preset.gradient.from, b) : preset.gradient.from;
+      const to = b !== 0 ? adjustColorBrightness(preset.gradient.to, b) : preset.gradient.to;
+      const hex = b !== 0 ? adjustColorBrightness(preset.hex, b) : preset.hex;
       const updated = getAutoContrastTheme(theme, undefined, {
-        from: preset.gradient.from,
-        to: preset.gradient.to,
+        from,
+        to,
         direction: currentDir,
       });
       onChange({
         ...updated,
         backgroundType: 'gradient',
-        backgroundColor: preset.hex,
+        backgroundColor: hex,
       });
     } else {
-      const updated = getAutoContrastTheme(theme, preset.hex);
+      const hex = b !== 0 ? adjustColorBrightness(preset.hex, b) : preset.hex;
+      const updated = getAutoContrastTheme(theme, hex);
       onChange({
         ...updated,
         backgroundType: 'color',
       });
     }
+  };
+
+  const handleBrightnessChange = (val: number) => {
+    if (isGradientMode) {
+      const currentDir = theme.gradient?.direction || 'to-b';
+      const fromAdjusted = adjustColorBrightness(activePreset.gradient.from, val);
+      const toAdjusted = adjustColorBrightness(activePreset.gradient.to, val);
+      const hexAdjusted = adjustColorBrightness(activePreset.hex, val);
+      const updated = getAutoContrastTheme(theme, undefined, {
+        from: fromAdjusted,
+        to: toAdjusted,
+        direction: currentDir,
+      });
+      onChange({
+        ...updated,
+        backgroundBrightness: val,
+        backgroundType: 'gradient',
+        backgroundColor: hexAdjusted,
+      });
+    } else {
+      const hexAdjusted = adjustColorBrightness(activePreset.hex, val);
+      const updated = getAutoContrastTheme(theme, hexAdjusted);
+      onChange({
+        ...updated,
+        backgroundBrightness: val,
+        backgroundType: 'color',
+      });
+    }
+  };
+
+  const handleResetBrightness = () => {
+    handleBrightnessChange(0);
   };
 
   const handleToggleColorMode = (mode: 'gradient' | 'solid') => {
@@ -293,7 +332,7 @@ export const GlobalStyleInspector: React.FC<GlobalStyleInspectorProps> = ({ them
                               : 'bg-white/20 text-white border-white/25'
                           }`}
                         >
-                          BC
+                          DB
                         </div>
 
                         {/* Skeleton lines */}
@@ -378,6 +417,57 @@ export const GlobalStyleInspector: React.FC<GlobalStyleInspectorProps> = ({ them
                     </button>
                   );
                 })}
+              </div>
+
+              {/* Barra de Iluminação do Fundo (Escurecer / Clarear) */}
+              <div className="p-3 rounded-xl bg-studio-black border border-studio-border space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-slate-300 flex items-center gap-1.5">
+                    <SunMedium className="w-3.5 h-3.5 text-brand-400" />
+                    <span>Iluminação da Cor de Fundo:</span>
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-mono font-bold text-brand-400">
+                      {currentBrightness === 0
+                        ? 'Padrão (0%)'
+                        : currentBrightness > 0
+                        ? `+${currentBrightness}% (Mais claro)`
+                        : `${currentBrightness}% (Mais escuro)`}
+                    </span>
+                    {currentBrightness !== 0 && (
+                      <button
+                        type="button"
+                        onClick={handleResetBrightness}
+                        className="text-[10px] text-slate-400 hover:text-white underline cursor-pointer"
+                        title="Restaurar luminosidade original"
+                      >
+                        Redefinir
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Range Slider com track gradiente visual */}
+                <div className="relative flex items-center pt-0.5">
+                  <input
+                    type="range"
+                    min={-50}
+                    max={50}
+                    step={2}
+                    value={currentBrightness}
+                    onChange={(e) => handleBrightnessChange(Number(e.target.value))}
+                    className="w-full h-2 rounded-lg appearance-none cursor-pointer accent-brand-500"
+                    style={{
+                      background: `linear-gradient(to right, #000000 0%, ${activePreset.hex} 50%, #ffffff 100%)`,
+                    }}
+                  />
+                </div>
+
+                <div className="flex justify-between text-[10px] text-slate-400 font-medium px-0.5">
+                  <span>🌑 Escurecer (-50%)</span>
+                  <span>Neutro (0%)</span>
+                  <span>☀️ Clarear (+50%)</span>
+                </div>
               </div>
 
               {/* Auto Contrast Alert Banner */}

@@ -191,10 +191,10 @@ export const LinkBlockView: React.FC<LinkBlockViewProps> = ({ data, theme, isEdi
 
     return (
       <div className="w-full grid grid-cols-2 gap-2">
-        <a href={data.url || '#'} target="_blank" rel="noopener noreferrer" className="block no-underline">
+        <a href={data.url || '#'} target="_blank" rel="noopener noreferrer" className="block w-full min-w-0 no-underline">
           {btn1}
         </a>
-        <a href={data.secondaryUrl || '#'} target="_blank" rel="noopener noreferrer" className="block no-underline">
+        <a href={data.secondaryUrl || '#'} target="_blank" rel="noopener noreferrer" className="block w-full min-w-0 no-underline">
           {btn2}
         </a>
       </div>

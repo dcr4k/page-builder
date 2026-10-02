@@ -71,7 +71,10 @@ export const MobileBottomSheet: React.FC<MobileBottomSheetProps> = ({
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-5 no-scrollbar">
+        <div
+          className="flex-1 overflow-y-auto p-4 sm:p-5 no-scrollbar overscroll-contain"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
           {children}
         </div>
       </div>

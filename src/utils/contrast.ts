@@ -140,3 +140,43 @@ export const getAutoContrastTheme = (
     };
   }
 };
+
+/**
+ * Adjusts brightness/lightness of a hex color by a percentage (-50 to +50)
+ * - Negative values darken towards black
+ * - Positive values lighten towards white
+ */
+export const adjustColorBrightness = (hex: string, percent: number): string => {
+  if (!hex || !hex.startsWith('#') || percent === 0) return hex;
+
+  let cleanHex = hex.replace('#', '');
+  if (cleanHex.length === 3) {
+    cleanHex = cleanHex.split('').map((c) => c + c).join('');
+  }
+  const num = parseInt(cleanHex, 16);
+  if (isNaN(num)) return hex;
+
+  let r = (num >> 16) & 255;
+  let g = (num >> 8) & 255;
+  let b = num & 255;
+
+  const factor = percent / 100;
+
+  if (factor < 0) {
+    // Darken towards black (0, 0, 0)
+    const mult = Math.max(0, 1 + factor * 1.5);
+    r = Math.max(0, Math.min(255, Math.round(r * mult)));
+    g = Math.max(0, Math.min(255, Math.round(g * mult)));
+    b = Math.max(0, Math.min(255, Math.round(b * mult)));
+  } else {
+    // Lighten towards white (255, 255, 255)
+    const mult = Math.min(1, factor * 1.5);
+    r = Math.max(0, Math.min(255, Math.round(r + (255 - r) * mult)));
+    g = Math.max(0, Math.min(255, Math.round(g + (255 - g) * mult)));
+    b = Math.max(0, Math.min(255, Math.round(b + (255 - b) * mult)));
+  }
+
+  const toHex = (n: number) => n.toString(16).padStart(2, '0');
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+};
+

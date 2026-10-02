@@ -79,13 +79,13 @@ export const ContactBlockView: React.FC<ContactBlockViewProps> = ({ data, theme,
             </div>
             <h4
               className="font-bold text-sm sm:text-base leading-tight truncate"
-              style={{ color: theme.textColor }}
+              style={{ color: data.titleColor || theme.textColor }}
             >
               {data.title || 'Fale Conosco Diretamente'}
             </h4>
             <p
               className="text-xs opacity-75 mt-0.5 line-clamp-1"
-              style={{ color: theme.textSecondaryColor }}
+              style={{ color: data.descriptionColor || theme.textSecondaryColor }}
             >
               {data.description || 'Tire dúvidas ou solicite um atendimento personalizado'}
             </p>
@@ -94,7 +94,8 @@ export const ContactBlockView: React.FC<ContactBlockViewProps> = ({ data, theme,
 
         {isEditor ? (
           <div
-            className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md cursor-pointer transition-all"
+            className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md cursor-pointer transition-all"
+            style={{ color: data.buttonTextColor || '#ffffff' }}
           >
             <WhatsAppIcon className="w-4 h-4" />
             <span>{data.buttonText || 'Iniciar Conversa no WhatsApp'}</span>
@@ -105,7 +106,8 @@ export const ContactBlockView: React.FC<ContactBlockViewProps> = ({ data, theme,
             href={`https://wa.me/${(data.destination || '5511999999999').replace(/[^0-9]/g, '')}?text=${encodeURIComponent('Olá! Vim através da sua página e gostaria de tirar uma dúvida.')}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md block text-center no-underline transition-all active:scale-[0.98]"
+            className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md block text-center no-underline transition-all active:scale-[0.98]"
+            style={{ color: data.buttonTextColor || '#ffffff' }}
           >
             <WhatsAppIcon className="w-4 h-4" />
             <span>{data.buttonText || 'Iniciar Conversa no WhatsApp'}</span>
@@ -132,14 +134,14 @@ export const ContactBlockView: React.FC<ContactBlockViewProps> = ({ data, theme,
           </div>
           <h3
             className="font-bold text-sm sm:text-base leading-tight"
-            style={{ color: theme.textColor }}
+            style={{ color: data.titleColor || theme.textColor }}
           >
             {data.title || 'Receba Novidades & Descontos'}
           </h3>
           {data.description && (
             <p
               className="text-xs opacity-80 mt-1 max-w-xs mx-auto"
-              style={{ color: theme.textSecondaryColor }}
+              style={{ color: data.descriptionColor || theme.textSecondaryColor }}
             >
               {data.description}
             </p>
@@ -164,7 +166,10 @@ export const ContactBlockView: React.FC<ContactBlockViewProps> = ({ data, theme,
             <button
               type="submit"
               className={`py-2.5 px-4 font-bold text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all ${buttonClasses}`}
-              style={buttonStyle}
+              style={{
+                ...buttonStyle,
+                ...(data.buttonTextColor ? { color: data.buttonTextColor } : {}),
+              }}
             >
               <span>{data.buttonText || 'Cadastrar'}</span>
               <Send className="w-3.5 h-3.5" />
@@ -187,14 +192,14 @@ export const ContactBlockView: React.FC<ContactBlockViewProps> = ({ data, theme,
       <div className="text-center mb-4">
         <h3
           className="font-bold text-base sm:text-lg"
-          style={{ color: theme.textColor }}
+          style={{ color: data.titleColor || theme.textColor }}
         >
           {data.title || 'Fale Conosco'}
         </h3>
         {data.description && (
           <p
             className="text-xs sm:text-sm mt-1 leading-relaxed"
-            style={{ color: theme.textSecondaryColor }}
+            style={{ color: data.descriptionColor || theme.textSecondaryColor }}
           >
             {data.description}
           </p>
@@ -204,10 +209,10 @@ export const ContactBlockView: React.FC<ContactBlockViewProps> = ({ data, theme,
       {submitted ? (
         <div className="py-6 flex flex-col items-center justify-center text-center gap-2 animate-fade-in">
           <CheckCircle className="w-10 h-10 text-emerald-400" />
-          <h4 className="font-bold text-sm" style={{ color: theme.textColor }}>
+          <h4 className="font-bold text-sm" style={{ color: data.titleColor || theme.textColor }}>
             Mensagem Enviada!
           </h4>
-          <p className="text-xs opacity-80" style={{ color: theme.textSecondaryColor }}>
+          <p className="text-xs opacity-80" style={{ color: data.descriptionColor || theme.textSecondaryColor }}>
             Obrigado pelo contato. Responderemos o mais breve possível.
           </p>
           <button
@@ -267,7 +272,10 @@ export const ContactBlockView: React.FC<ContactBlockViewProps> = ({ data, theme,
           <button
             type="submit"
             className={`w-full py-3 px-4 mt-1 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all ${buttonClasses}`}
-            style={buttonStyle}
+            style={{
+              ...buttonStyle,
+              ...(data.buttonTextColor ? { color: data.buttonTextColor } : {}),
+            }}
           >
             <span>{data.buttonText || 'Enviar Mensagem'}</span>
             <Send className="w-3.5 h-3.5" />

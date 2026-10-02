@@ -29,7 +29,7 @@ export const FaqBlockView: React.FC<FaqBlockViewProps> = ({ data, theme }) => {
         {data.title && (
           <h3
             className="font-bold text-sm sm:text-base text-center mb-3"
-            style={{ color: theme.textColor }}
+            style={{ color: data.titleColor || theme.textColor }}
           >
             {data.title}
           </h3>
@@ -49,14 +49,14 @@ export const FaqBlockView: React.FC<FaqBlockViewProps> = ({ data, theme }) => {
                 <HelpCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: theme.primaryColor }} />
                 <h4
                   className="font-bold text-xs sm:text-sm leading-snug"
-                  style={{ color: theme.textColor }}
+                  style={{ color: data.questionColor || theme.textColor }}
                 >
                   {item.question}
                 </h4>
               </div>
               <p
                 className="text-xs sm:text-sm pl-6 leading-relaxed opacity-85"
-                style={{ color: theme.textSecondaryColor }}
+                style={{ color: data.answerColor || theme.textSecondaryColor }}
               >
                 {item.answer}
               </p>
@@ -74,7 +74,7 @@ export const FaqBlockView: React.FC<FaqBlockViewProps> = ({ data, theme }) => {
         {data.title && (
           <h3
             className="font-bold text-sm sm:text-base text-center mb-2"
-            style={{ color: theme.textColor }}
+            style={{ color: data.titleColor || theme.textColor }}
           >
             {data.title}
           </h3>
@@ -99,7 +99,7 @@ export const FaqBlockView: React.FC<FaqBlockViewProps> = ({ data, theme }) => {
                 >
                   <span
                     className="font-medium text-xs sm:text-sm"
-                    style={{ color: theme.textColor }}
+                    style={{ color: data.questionColor || theme.textColor }}
                   >
                     {item.question}
                   </span>
@@ -116,7 +116,7 @@ export const FaqBlockView: React.FC<FaqBlockViewProps> = ({ data, theme }) => {
                     className="px-4 pb-3.5 pt-1 text-xs sm:text-sm leading-relaxed border-t"
                     style={{
                       borderColor: theme.cardBorderColor,
-                      color: theme.textSecondaryColor,
+                      color: data.answerColor || theme.textSecondaryColor,
                     }}
                   >
                     {item.answer}
@@ -169,7 +169,7 @@ export const FaqBlockView: React.FC<FaqBlockViewProps> = ({ data, theme }) => {
       {data.title && (
         <h3
           className="font-bold text-sm sm:text-base text-center mb-3"
-          style={{ color: theme.textColor }}
+          style={{ color: data.titleColor || theme.textColor }}
         >
           {data.title}
         </h3>
@@ -194,7 +194,7 @@ export const FaqBlockView: React.FC<FaqBlockViewProps> = ({ data, theme }) => {
               >
                 <span
                   className="font-medium text-xs sm:text-sm"
-                  style={{ color: theme.textColor }}
+                  style={{ color: data.questionColor || theme.textColor }}
                 >
                   {item.question}
                 </span>
@@ -211,7 +211,7 @@ export const FaqBlockView: React.FC<FaqBlockViewProps> = ({ data, theme }) => {
                   className="px-4 pb-3.5 pt-1 text-xs sm:text-sm leading-relaxed border-t"
                   style={{
                     borderColor: theme.cardBorderColor,
-                    color: theme.textSecondaryColor,
+                    color: data.answerColor || theme.textSecondaryColor,
                   }}
                 >
                   {item.answer}

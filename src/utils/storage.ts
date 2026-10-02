@@ -1,6 +1,7 @@
 import type { Block, PageTheme } from '../types';
 
-const STORAGE_KEY = 'biocraft_project_data';
+const STORAGE_KEY = 'digit4l_builder_project_data';
+const LEGACY_STORAGE_KEY = 'biocraft_project_data';
 
 export interface ProjectState {
   version: string;
@@ -29,7 +30,7 @@ export const saveProjectToStorage = (theme: PageTheme, blocks: Block[], selected
 
 export const loadProjectFromStorage = (): ProjectState | null => {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
     if (!raw) return null;
     return JSON.parse(raw) as ProjectState;
   } catch (err) {
@@ -40,7 +41,7 @@ export const loadProjectFromStorage = (): ProjectState | null => {
 
 export const exportProjectToJson = (theme: PageTheme, blocks: Block[]): string => {
   const data = {
-    appName: 'BioCraft Studio',
+    appName: 'Digit4l Builder',
     exportedAt: new Date().toISOString(),
     theme,
     blocks,

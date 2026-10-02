@@ -43,7 +43,7 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'biocraft-projeto.json';
+    link.download = 'digit4l-builder-projeto.json';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
