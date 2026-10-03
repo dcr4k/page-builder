@@ -1,6 +1,5 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Trash2, Copy, ArrowUp, ArrowDown, Edit3, ArrowUpDown, X } from 'lucide-react';
 import type { Block, PageTheme } from '../../types';
 import { BlockRenderer } from '../blocks/BlockRenderer';
@@ -10,8 +9,6 @@ interface SortableBlockWrapperProps {
   theme: PageTheme;
   isSelected: boolean;
   isDeleting?: boolean;
-  showDragHint?: boolean;
-  onDismissDragHint?: () => void;
   onSelect: () => void;
   onOpenEdit: () => void;
   onDelete: () => void;
@@ -27,8 +24,6 @@ export const SortableBlockWrapper: React.FC<SortableBlockWrapperProps> = ({
   theme,
   isSelected,
   isDeleting = false,
-  showDragHint = false,
-  onDismissDragHint,
   onSelect,
   onOpenEdit,
   onDelete,
@@ -50,13 +45,29 @@ export const SortableBlockWrapper: React.FC<SortableBlockWrapperProps> = ({
 
   const isTargetGuide = isOver && !isDragging;
 
+  // Real-time movement strictly via hardware-accelerated translate3d(x, y, 0)
+  // Subpixels rounded to avoid WebKit anti-aliasing / raster invalidation on Retina displays
+  const transform3d = transform
+    ? `translate3d(${Math.round(transform.x)}px, ${Math.round(transform.y)}px, 0)${isDragging ? ' scale(1.025)' : ''}`
+    : isDragging
+    ? 'translate3d(0, 0, 0) scale(1.025)'
+    : undefined;
+
   const style: React.CSSProperties = {
-    transform: CSS.Transform.toString(transform),
+    transform: transform3d,
+    WebkitTransform: transform3d,
     transition: transition || 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
     zIndex: isDragging ? 50 : isTargetGuide ? 30 : undefined,
     opacity: isDragging ? 0.8 : undefined,
-    touchAction: isDragging ? 'none' : 'pan-y',
+    touchAction: 'none',
+    WebkitUserSelect: 'none',
+    userSelect: 'none',
     WebkitTouchCallout: 'none',
+    willChange: 'transform',
+    WebkitBackfaceVisibility: 'hidden',
+    backfaceVisibility: 'hidden',
+    WebkitTransformStyle: 'preserve-3d',
+    transformStyle: 'preserve-3d',
   };
 
   const getBlockName = (type: Block['type']) => {
@@ -83,15 +94,12 @@ export const SortableBlockWrapper: React.FC<SortableBlockWrapperProps> = ({
       onClick={(e) => {
         e.stopPropagation();
         onSelect();
-        if (showDragHint && onDismissDragHint) {
-          onDismissDragHint();
-        }
       }}
-      className={`relative rounded-2xl transition-all duration-200 select-none cursor-grab active:cursor-grabbing ${
+      className={`relative rounded-2xl transition-all duration-200 select-none cursor-grab active:cursor-grabbing builder-block-item interactive-drag-item ${
         isDeleting ? 'block-exit-anim' : 'block-enter-anim'
       } ${
         isDragging
-          ? 'scale-[1.025] shadow-2xl ring-2 ring-brand-500 z-50'
+          ? 'shadow-2xl ring-2 ring-brand-500 z-50'
           : isTargetGuide
           ? 'guide-target-block ring-2 ring-brand-400 bg-brand-500/10'
           : isSelected
@@ -133,7 +141,13 @@ export const SortableBlockWrapper: React.FC<SortableBlockWrapperProps> = ({
 
           {/* Quick Grip Icon (visual indicator) */}
           <div
-            className="p-1 rounded text-slate-300 hover:text-brand-400 cursor-grab active:cursor-grabbing"
+            className="drag-handle p-1 rounded text-slate-300 hover:text-brand-400 cursor-grab active:cursor-grabbing"
+            style={{
+              touchAction: 'none',
+              WebkitUserSelect: 'none',
+              userSelect: 'none',
+              WebkitTouchCallout: 'none',
+            }}
             title="Você pode arrastar clicando em qualquer lugar do bloco"
           >
             <GripVertical className="w-3.5 h-3.5" />

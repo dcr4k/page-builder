@@ -25,11 +25,24 @@ export const GlobalLoadingOverlay: React.FC<GlobalLoadingOverlayProps> = ({
           <div className="absolute -inset-2 rounded-full border border-brand-500/40 shadow-[0_0_35px_rgba(0,229,153,0.3)]" />
 
           {/* Logo spinning horizontally on its vertical Y-axis */}
-          <div className="w-20 h-20 sm:w-24 sm:h-24 relative flex items-center justify-center animate-spin-horizontal">
+          <div
+            className="w-20 h-20 sm:w-24 sm:h-24 relative flex items-center justify-center animate-spin-horizontal"
+            style={{
+              transformStyle: 'preserve-3d',
+              WebkitTransformStyle: 'preserve-3d',
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden',
+            }}
+          >
             <img
               src={logoImg}
               alt="Digit4l Builder Logo"
+              decoding="async"
               className="w-full h-full object-contain drop-shadow-[0_0_20px_rgba(0,229,153,0.65)]"
+              style={{
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
+              }}
             />
           </div>
         </div>

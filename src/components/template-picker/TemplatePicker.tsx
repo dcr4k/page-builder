@@ -19,10 +19,32 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({ templates, onSel
   const startXRef = useRef<number | null>(null);
   const startYRef = useRef<number | null>(null);
   const isHorizontalSwipeRef = useRef<boolean | null>(null);
+  const rafIdRef = useRef<number | null>(null);
+  const pendingDeltaXRef = useRef<number>(0);
 
   // 3D Parallax tilt state for the center card
   const [mouseTilt, setMouseTilt] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
+  const tiltRafIdRef = useRef<number | null>(null);
+
+  // Schedule drag updates aligned to display V-Sync (60Hz / 120Hz)
+  const scheduleDragUpdate = useCallback((delta: number) => {
+    pendingDeltaXRef.current = delta;
+    if (rafIdRef.current === null) {
+      rafIdRef.current = requestAnimationFrame(() => {
+        setDragOffset(pendingDeltaXRef.current);
+        rafIdRef.current = null;
+      });
+    }
+  }, []);
+
+  // Cleanup pending RAFs on unmount
+  useEffect(() => {
+    return () => {
+      if (rafIdRef.current !== null) cancelAnimationFrame(rafIdRef.current);
+      if (tiltRafIdRef.current !== null) cancelAnimationFrame(tiltRafIdRef.current);
+    };
+  }, []);
 
   const handlePrev = useCallback(() => {
     setCurrentIndex((prev) => (prev === 0 ? templates.length - 1 : prev - 1));
@@ -48,7 +70,7 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({ templates, onSel
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentIndex, handleNext, handlePrev, onSelectTemplate, templates]);
 
-  // Touch Handlers
+  // Touch Handlers with 120Hz RAF throttling for silky-smooth iOS gestures
   const handleTouchStart = (e: React.TouchEvent) => {
     startXRef.current = e.touches[0].clientX;
     startYRef.current = e.touches[0].clientY;
@@ -71,13 +93,18 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({ templates, onSel
     }
 
     if (isHorizontalSwipeRef.current) {
-      setDragOffset(deltaX);
+      scheduleDragUpdate(deltaX);
     }
   };
 
   const handleTouchEnd = () => {
-    if (isHorizontalSwipeRef.current && Math.abs(dragOffset) > 40) {
-      if (dragOffset < 0) {
+    if (rafIdRef.current !== null) {
+      cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = null;
+    }
+    const finalOffset = pendingDeltaXRef.current;
+    if (isHorizontalSwipeRef.current && Math.abs(finalOffset) > 40) {
+      if (finalOffset < 0) {
         handleNext();
       } else {
         handlePrev();
@@ -85,6 +112,7 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({ templates, onSel
     }
     setIsDragging(false);
     setDragOffset(0);
+    pendingDeltaXRef.current = 0;
     startXRef.current = null;
     startYRef.current = null;
     isHorizontalSwipeRef.current = null;
@@ -98,28 +126,40 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({ templates, onSel
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || startXRef.current === null) {
-      // Handle 3D Parallax Tilt when hovering on desktop
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const x = (e.clientX - centerX) / (rect.width / 2);
-        const y = (e.clientY - centerY) / (rect.height / 2);
-        setMouseTilt({
-          x: Math.max(-1, Math.min(1, x)),
-          y: Math.max(-1, Math.min(1, y)),
+      // Handle 3D Parallax Tilt when hovering on desktop with RAF throttle
+      if (containerRef.current && tiltRafIdRef.current === null) {
+        const clientX = e.clientX;
+        const clientY = e.clientY;
+        tiltRafIdRef.current = requestAnimationFrame(() => {
+          if (containerRef.current) {
+            const rect = containerRef.current.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const x = (clientX - centerX) / (rect.width / 2);
+            const y = (clientY - centerY) / (rect.height / 2);
+            setMouseTilt({
+              x: Math.max(-1, Math.min(1, x)),
+              y: Math.max(-1, Math.min(1, y)),
+            });
+          }
+          tiltRafIdRef.current = null;
         });
       }
       return;
     }
     const deltaX = e.clientX - startXRef.current;
-    setDragOffset(deltaX);
+    scheduleDragUpdate(deltaX);
   };
 
   const handleMouseUp = () => {
     if (isDragging) {
-      if (Math.abs(dragOffset) > 40) {
-        if (dragOffset < 0) {
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
+      const finalOffset = pendingDeltaXRef.current;
+      if (Math.abs(finalOffset) > 40) {
+        if (finalOffset < 0) {
           handleNext();
         } else {
           handlePrev();
@@ -127,6 +167,7 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({ templates, onSel
       }
       setIsDragging(false);
       setDragOffset(0);
+      pendingDeltaXRef.current = 0;
       startXRef.current = null;
     }
   };
@@ -134,6 +175,10 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({ templates, onSel
   const handleMouseLeave = () => {
     if (isDragging) {
       handleMouseUp();
+    }
+    if (tiltRafIdRef.current !== null) {
+      cancelAnimationFrame(tiltRafIdRef.current);
+      tiltRafIdRef.current = null;
     }
     setMouseTilt({ x: 0, y: 0 });
   };
@@ -188,7 +233,10 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({ templates, onSel
           className="relative w-full max-w-4xl h-[330px] sm:h-[358px] md:h-[372px] flex items-center justify-center cursor-grab active:cursor-grabbing"
           style={{
             perspective: '1100px',
+            WebkitPerspective: '1100px',
             transformStyle: 'preserve-3d',
+            WebkitTransformStyle: 'preserve-3d',
+            isolation: 'isolate',
           }}
         >
           {/* Render All Templates in 3D Space */}
@@ -281,9 +329,14 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({ templates, onSel
                 className="absolute top-1/2 left-1/2 will-change-transform"
                 style={{
                   transform,
+                  WebkitTransform: transform,
                   opacity,
                   zIndex,
                   pointerEvents,
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
+                  transformStyle: 'preserve-3d',
+                  WebkitTransformStyle: 'preserve-3d',
                   transition: isDragging
                     ? 'none'
                     : 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease',

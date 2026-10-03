@@ -3,8 +3,6 @@ import {
   DndContext,
   closestCenter,
   KeyboardSensor,
-  MouseSensor,
-  TouchSensor,
   useSensor,
   useSensors,
   DragEndEvent,
@@ -16,9 +14,9 @@ import {
   useSortable,
   arrayMove,
 } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, ArrowUp, ArrowDown, Trash2, Copy } from 'lucide-react';
 import type { Block } from '../../types';
+import { RafMouseSensor, RafTouchSensor } from '../../utils/rafSensors';
 
 interface MobileReorderSheetProps {
   blocks: Block[];
@@ -77,11 +75,26 @@ const SortableItem: React.FC<SortableItemProps> = ({
     isDragging,
   } = useSortable({ id: block.id });
 
+  // Real-time movement strictly via hardware-accelerated translate3d(x, y, 0)
+  const transform3d = transform
+    ? `translate3d(${Math.round(transform.x)}px, ${Math.round(transform.y)}px, 0)`
+    : undefined;
+
   const style: React.CSSProperties = {
-    transform: CSS.Transform.toString(transform),
+    transform: transform3d,
+    WebkitTransform: transform3d,
     transition,
     zIndex: isDragging ? 50 : undefined,
     opacity: isDragging ? 0.5 : 1,
+    touchAction: 'none',
+    WebkitUserSelect: 'none',
+    userSelect: 'none',
+    WebkitTouchCallout: 'none',
+    willChange: 'transform',
+    WebkitBackfaceVisibility: 'hidden',
+    backfaceVisibility: 'hidden',
+    WebkitTransformStyle: 'preserve-3d',
+    transformStyle: 'preserve-3d',
   };
 
   return (
@@ -89,7 +102,7 @@ const SortableItem: React.FC<SortableItemProps> = ({
       ref={setNodeRef}
       style={style}
       onClick={onSelect}
-      className={`p-3 rounded-2xl border flex items-center justify-between gap-2.5 transition-all select-none ${
+      className={`p-3 rounded-2xl border flex items-center justify-between gap-2.5 transition-all select-none builder-block-item sortable-item-row interactive-drag-item ${
         isSelected
           ? 'bg-brand-500/15 border-brand-500 shadow-md ring-1 ring-brand-500/50'
           : 'bg-studio-card border-studio-border hover:border-brand-500/30'
@@ -100,7 +113,13 @@ const SortableItem: React.FC<SortableItemProps> = ({
           {...attributes}
           {...listeners}
           onClick={(e) => e.stopPropagation()}
-          className="p-1 rounded text-slate-500 hover:text-brand-400 cursor-grab active:cursor-grabbing flex-shrink-0"
+          className="drag-handle p-1 rounded text-slate-500 hover:text-brand-400 cursor-grab active:cursor-grabbing flex-shrink-0"
+          style={{
+            touchAction: 'none',
+            WebkitUserSelect: 'none',
+            userSelect: 'none',
+            WebkitTouchCallout: 'none',
+          }}
         >
           <GripVertical className="w-4 h-4" />
         </div>
@@ -163,13 +182,14 @@ export const MobileReorderSheet: React.FC<MobileReorderSheetProps> = ({
   onDuplicateBlock,
   onDeleteBlock,
 }) => {
+  // RAF-optimized Touch and Mouse sensors prevent iOS WebKit dropped frames during dragging
   const sensors = useSensors(
-    useSensor(MouseSensor, {
+    useSensor(RafMouseSensor, {
       activationConstraint: {
         distance: 5,
       },
     }),
-    useSensor(TouchSensor, {
+    useSensor(RafTouchSensor, {
       activationConstraint: {
         delay: 150,
         tolerance: 6,

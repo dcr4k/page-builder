@@ -17,7 +17,10 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   onOpenPreview,
 }) => {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-studio-panel/95 backdrop-blur-xl border-t border-studio-border px-2 sm:px-6 py-2 safe-area-bottom select-none">
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-40 bg-studio-panel/95 backdrop-blur-xl border-t border-studio-border px-2 sm:px-6 py-2 safe-area-bottom select-none"
+      style={{ transform: 'translateZ(0)', WebkitTransform: 'translateZ(0)' }}
+    >
       <div className="max-w-md mx-auto grid grid-cols-4 items-center gap-1">
         {/* Adicionar Bloco (Main highlighted CTA in brand green) */}
         <button

@@ -149,6 +149,9 @@
 .block-exit-anim {
   animation: blockExit 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
   pointer-events: none;
+  will-change: transform, opacity, max-height;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 /* Block Enter Animation on Add */
@@ -165,13 +168,42 @@
 
 .block-enter-anim {
   animation: blockEnter 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* WebKit GPU Hardware Acceleration for Builder Blocks */
+.builder-block-item,
+.sortable-block-wrapper,
+.sortable-item-row {
+  will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
+}
+
+/* Touch and Pointer Drag Handles & Interactive Elements */
+.drag-handle,
+.interactive-drag-item {
+  touch-action: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
 }
 
 /* Guide border for target block during drag */
 .guide-target-block {
   box-shadow: 0 0 0 2.5px #00e599, 0 0 28px rgba(0, 229, 153, 0.6) !important;
-  transform: scale(1.015) !important;
+  transform: translate3d(0, 0, 0) scale(1.015) !important;
+  -webkit-transform: translate3d(0, 0, 0) scale(1.015) !important;
   transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 /* Highlight Attention Effects for Link Buttons */
@@ -261,18 +293,34 @@
 }
 
 /* 3D Horizontal Spin on Y-Axis for Global Logo Spinner */
+@-webkit-keyframes spinHorizontal {
+  0% {
+    -webkit-transform: perspective(600px) rotateY(0deg);
+  }
+  100% {
+    -webkit-transform: perspective(600px) rotateY(360deg);
+  }
+}
+
 @keyframes spinHorizontal {
   0% {
     transform: perspective(600px) rotateY(0deg);
+    -webkit-transform: perspective(600px) rotateY(0deg);
   }
   100% {
     transform: perspective(600px) rotateY(360deg);
+    -webkit-transform: perspective(600px) rotateY(360deg);
   }
 }
 
 .animate-spin-horizontal {
   animation: spinHorizontal 1.2s linear infinite;
+  -webkit-animation: spinHorizontal 1.2s linear infinite;
   transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform;
 }
 
 /* 2-second Progress Bar Fill Animation */

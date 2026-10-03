@@ -46,7 +46,9 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({ mode, theme, children 
                 style={{
                   backgroundImage: `url(${theme.backgroundImage})`,
                   filter: theme.backgroundBlur ? `blur(${theme.backgroundBlur}px)` : undefined,
-                  transform: theme.backgroundBlur ? 'scale(1.15)' : undefined,
+                  WebkitFilter: theme.backgroundBlur ? `blur(${theme.backgroundBlur}px)` : undefined,
+                  transform: theme.backgroundBlur ? 'scale(1.15) translateZ(0)' : 'translateZ(0)',
+                  WebkitTransform: theme.backgroundBlur ? 'scale(1.15) translateZ(0)' : 'translateZ(0)',
                 }}
               />
               {theme.backgroundOverlayOpacity > 0 && (
@@ -82,7 +84,9 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({ mode, theme, children 
                 style={{
                   backgroundImage: `url(${theme.backgroundImage})`,
                   filter: theme.backgroundBlur ? `blur(${theme.backgroundBlur}px)` : undefined,
-                  transform: theme.backgroundBlur ? 'scale(1.15)' : undefined,
+                  WebkitFilter: theme.backgroundBlur ? `blur(${theme.backgroundBlur}px)` : undefined,
+                  transform: theme.backgroundBlur ? 'scale(1.15) translateZ(0)' : 'translateZ(0)',
+                  WebkitTransform: theme.backgroundBlur ? 'scale(1.15) translateZ(0)' : 'translateZ(0)',
                 }}
               />
               {theme.backgroundOverlayOpacity > 0 && (

@@ -10,6 +10,7 @@ import { CanvasArea } from './components/editor/CanvasArea';
 import { LivePreviewScreen } from './components/preview/LivePreviewScreen';
 import { ExportCodeModal } from './components/modals/ExportCodeModal';
 import { ImportExportModal } from './components/modals/ImportExportModal';
+import { MiniGuideModal } from './components/modals/MiniGuideModal';
 import { GlobalLoadingOverlay } from './components/common/GlobalLoadingOverlay';
 
 import { MobileBottomNav } from './components/mobile/MobileBottomNav';
@@ -32,6 +33,9 @@ export const App: React.FC = () => {
   // Global layout selection loading state (2 seconds with spinning logo)
   const [isLoadingLayout, setIsLoadingLayout] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('Carregando layout');
+
+  // Interactive 3-step mini guide state
+  const [isMiniGuideOpen, setIsMiniGuideOpen] = useState(false);
 
   // Active theme and blocks
   const [theme, setTheme] = useState<PageTheme>(TEMPLATES[0].theme);
@@ -146,6 +150,16 @@ export const App: React.FC = () => {
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
       setCurrentView('editor');
+
+      // Open interactive 3-step mini guide if not previously dismissed
+      try {
+        const hasDismissed = localStorage.getItem('digit4l_guide_dismissed') === 'true';
+        if (!hasDismissed) {
+          setIsMiniGuideOpen(true);
+        }
+      } catch (e) {
+        setIsMiniGuideOpen(true);
+      }
     }, 2000);
   };
 
@@ -375,6 +389,7 @@ export const App: React.FC = () => {
         onOpenExportModal={() => setIsExportModalOpen(true)}
         onOpenBackupModal={() => setIsBackupModalOpen(true)}
         onBackToPicker={() => setCurrentView('picker')}
+        onOpenGuide={() => setIsMiniGuideOpen(true)}
       />
 
       {/* Main Clean Canvas Area (min-h-0 flex-1 for accurate scroll calculations) */}
@@ -488,6 +503,20 @@ export const App: React.FC = () => {
         theme={theme}
         blocks={blocks}
         onImport={handleImportProject}
+      />
+
+      {/* 3-Step Interactive Mini Guide Modal */}
+      <MiniGuideModal
+        isOpen={isMiniGuideOpen}
+        onClose={() => setIsMiniGuideOpen(false)}
+        onOpenAddSheet={() => {
+          setIsMiniGuideOpen(false);
+          setIsAddSheetOpen(true);
+        }}
+        onOpenReorderSheet={() => {
+          setIsMiniGuideOpen(false);
+          setIsReorderSheetOpen(true);
+        }}
       />
 
       {/* Global Loading Overlay */}

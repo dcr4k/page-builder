@@ -54,7 +54,9 @@ export const DeviceCardPreview: React.FC<DeviceCardPreviewProps> = ({
                 style={{
                   backgroundImage: `url(${template.theme.backgroundImage})`,
                   filter: template.theme.backgroundBlur ? `blur(${Math.min(template.theme.backgroundBlur, 8)}px)` : undefined,
-                  transform: template.theme.backgroundBlur ? 'scale(1.2)' : undefined,
+                  WebkitFilter: template.theme.backgroundBlur ? `blur(${Math.min(template.theme.backgroundBlur, 8)}px)` : undefined,
+                  transform: template.theme.backgroundBlur ? 'scale(1.2) translateZ(0)' : 'translateZ(0)',
+                  WebkitTransform: template.theme.backgroundBlur ? 'scale(1.2) translateZ(0)' : 'translateZ(0)',
                 }}
               />
               {template.theme.backgroundOverlayOpacity > 0 && (
@@ -91,11 +93,13 @@ export const DeviceCardPreview: React.FC<DeviceCardPreviewProps> = ({
             {isBlankTemplate ? (
               <EmptyCanvasSimulation />
             ) : (
-              template.blocks.slice(0, 5).map((block) => (
-                <div key={block.id} className="w-full transform scale-[0.74] sm:scale-[0.78] origin-top">
-                  <BlockRenderer block={block} theme={template.theme} isEditor={false} />
-                </div>
-              ))
+              <div className="w-full flex flex-col gap-1.5 transform scale-[0.74] sm:scale-[0.78] origin-top will-change-transform">
+                {template.blocks.slice(0, 5).map((block) => (
+                  <div key={block.id} className="w-full">
+                    <BlockRenderer block={block} theme={template.theme} isEditor={false} />
+                  </div>
+                ))}
+              </div>
             )}
           </div>
 

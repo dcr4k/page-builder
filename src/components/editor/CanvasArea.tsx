@@ -3,8 +3,6 @@ import {
   DndContext,
   closestCenter,
   KeyboardSensor,
-  MouseSensor,
-  TouchSensor,
   useSensor,
   useSensors,
   DragEndEvent,
@@ -20,6 +18,7 @@ import type { Block, PageTheme } from '../../types';
 import { SortableBlockWrapper } from './SortableBlockWrapper';
 import { getBackgroundStyle } from '../../utils/themeStyles';
 import { isLightColor } from '../../utils/contrast';
+import { RafMouseSensor, RafTouchSensor } from '../../utils/rafSensors';
 
 interface CanvasAreaProps {
   blocks: Block[];
@@ -49,23 +48,15 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
   onOpenAddSheet,
 }) => {
   const bgStyle = getBackgroundStyle(theme);
-  const [showDragHint, setShowDragHint] = useState(true);
 
-  // Auto-hide drag hint after 9 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowDragHint(false);
-    }, 9000);
-    return () => clearTimeout(timer);
-  }, []);
-
+  // RAF-optimized Touch and Mouse sensors prevent iOS WebKit dropped frames during dragging
   const sensors = useSensors(
-    useSensor(MouseSensor, {
+    useSensor(RafMouseSensor, {
       activationConstraint: {
         distance: 6, // 6px movement triggers drag with mouse on desktop
       },
     }),
-    useSensor(TouchSensor, {
+    useSensor(RafTouchSensor, {
       activationConstraint: {
         delay: 200, // 200ms press-and-hold triggers drag on smartphone touchscreens
         tolerance: 8, // 8px tolerance during press-and-hold
@@ -77,7 +68,6 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
   );
 
   const handleDragEnd = (event: DragEndEvent) => {
-    setShowDragHint(false);
     const { active, over } = event;
     if (over && active.id !== over.id) {
       const oldIndex = blocks.findIndex((b) => b.id === active.id);
@@ -122,7 +112,9 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                 style={{
                   backgroundImage: `url(${theme.backgroundImage})`,
                   filter: theme.backgroundBlur ? `blur(${theme.backgroundBlur}px)` : undefined,
-                  transform: theme.backgroundBlur ? 'scale(1.15)' : undefined,
+                  WebkitFilter: theme.backgroundBlur ? `blur(${theme.backgroundBlur}px)` : undefined,
+                  transform: theme.backgroundBlur ? 'scale(1.15) translateZ(0)' : 'translateZ(0)',
+                  WebkitTransform: theme.backgroundBlur ? 'scale(1.15) translateZ(0)' : 'translateZ(0)',
                 }}
               />
               {theme.backgroundOverlayOpacity > 0 && (
@@ -169,31 +161,6 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                 strategy={verticalListSortingStrategy}
               >
                 <div className="flex flex-col gap-3 py-1">
-                  {/* Reorder Onboarding Tip - Positioned cleanly ABOVE the blocks, NEVER covering content */}
-                  {showDragHint && blocks.length > 1 && (
-                    <div className="w-full py-2 px-3 rounded-2xl bg-studio-panel/95 border border-brand-500/40 text-slate-200 text-xs flex items-center justify-between gap-2 shadow-xl backdrop-blur-md animate-fade-in flex-shrink-0">
-                      <div className="flex items-center gap-2 truncate">
-                        <div className="w-5 h-5 rounded-full bg-brand-500/20 flex items-center justify-center flex-shrink-0">
-                          <ArrowUpDown className="w-3 h-3 text-brand-400" />
-                        </div>
-                        <span className="truncate text-[11px] font-semibold text-slate-200">
-                          Segure e arraste qualquer bloco para reordenar
-                        </span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowDragHint(false);
-                        }}
-                        className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-studio-hover transition-colors flex-shrink-0"
-                        title="Fechar dica"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  )}
-
                   {blocks.map((block, index) => (
                     <SortableBlockWrapper
                       key={block.id}
@@ -201,8 +168,6 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                       theme={theme}
                       isSelected={selectedBlockId === block.id}
                       isDeleting={deletingBlockIds.includes(block.id)}
-                      showDragHint={showDragHint}
-                      onDismissDragHint={() => setShowDragHint(false)}
                       onSelect={() => onSelectBlock(selectedBlockId === block.id ? null : block.id)}
                       onOpenEdit={() => onOpenEditBlock(block.id)}
                       onDelete={() => onDeleteBlock(block.id)}

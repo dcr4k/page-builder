@@ -37,7 +37,9 @@ export const LivePreviewScreen: React.FC<LivePreviewScreenProps> = ({
             style={{
               backgroundImage: `url(${theme.backgroundImage})`,
               filter: theme.backgroundBlur ? `blur(${theme.backgroundBlur}px)` : undefined,
-              transform: theme.backgroundBlur ? 'scale(1.15)' : undefined,
+              WebkitFilter: theme.backgroundBlur ? `blur(${theme.backgroundBlur}px)` : undefined,
+              transform: theme.backgroundBlur ? 'scale(1.15) translateZ(0)' : 'translateZ(0)',
+              WebkitTransform: theme.backgroundBlur ? 'scale(1.15) translateZ(0)' : 'translateZ(0)',
             }}
           />
           {theme.backgroundOverlayOpacity > 0 && (
@@ -50,7 +52,10 @@ export const LivePreviewScreen: React.FC<LivePreviewScreenProps> = ({
       )}
 
       {/* Floating Top Control Bar */}
-      <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-studio-panel/95 backdrop-blur-xl border border-studio-border rounded-2xl shadow-2xl px-3 py-2 flex items-center gap-2 sm:gap-4 select-none">
+      <nav
+        className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-studio-panel/95 backdrop-blur-xl border border-studio-border rounded-2xl shadow-2xl px-3 py-2 flex items-center gap-2 sm:gap-4 select-none"
+        style={{ transform: 'translate3d(-50%, 0, 0)', WebkitTransform: 'translate3d(-50%, 0, 0)' }}
+      >
         <button
           type="button"
           onClick={onBackToEditor}

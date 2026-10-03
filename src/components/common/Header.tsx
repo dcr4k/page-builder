@@ -7,6 +7,7 @@ import {
   Check,
   Save,
   FileDown,
+  HelpCircle,
 } from 'lucide-react';
 import type { AppView } from '../../types';
 import logoImg from '../../assets/logo.png';
@@ -20,9 +21,10 @@ interface HeaderProps {
   onRedo: () => void;
   onSave: () => void;
   isSaved: boolean;
-  onOpenExportModal: () => void;
+  onOpenExportModal?: () => void;
   onOpenBackupModal: () => void;
   onBackToPicker: () => void;
+  onOpenGuide?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -36,9 +38,13 @@ export const Header: React.FC<HeaderProps> = ({
   isSaved,
   onOpenBackupModal,
   onBackToPicker,
+  onOpenGuide,
 }) => {
   return (
-    <header className="h-14 border-b border-studio-border bg-studio-panel/95 backdrop-blur-md px-2.5 sm:px-4 flex items-center justify-between z-30 select-none flex-shrink-0">
+    <header
+      className="h-14 border-b border-studio-border bg-studio-panel/95 backdrop-blur-md px-2.5 sm:px-4 flex items-center justify-between z-30 select-none flex-shrink-0"
+      style={{ transform: 'translateZ(0)', WebkitTransform: 'translateZ(0)' }}
+    >
       {/* Left: Back to Templates & BioCraft Logo */}
       <div className="flex items-center gap-2">
         <button
@@ -90,8 +96,21 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
       </div>
 
-      {/* Right: Preview mode, save status, backup */}
+      {/* Right: Preview mode, save status, backup, guide */}
       <div className="flex items-center gap-1 sm:gap-2">
+        {/* Guia Rápido 3 Passos */}
+        {onOpenGuide && (
+          <button
+            type="button"
+            onClick={onOpenGuide}
+            className="p-1.5 sm:py-1.5 sm:px-2.5 rounded-xl bg-studio-card hover:bg-studio-border border border-studio-border text-slate-300 hover:text-brand-400 flex items-center gap-1.5 transition-colors active:scale-95 shadow-sm"
+            title="Ver Guia de 3 Passos"
+          >
+            <HelpCircle className="w-4 h-4 text-brand-400" />
+            <span className="hidden md:inline text-xs font-semibold">Guia</span>
+          </button>
+        )}
+
         {/* Backup button (visible on larger screens or as secondary) */}
         <button
           type="button"
